@@ -24,15 +24,15 @@ export class UpdateManager {
     }
 
     static updateLayer(layer) {
-        const layerItem = UpdateManager.getBy(`[data-layer-name="${layer.name}"]`);
-        if (!layerItem) {
+        const layerContent = UpdateManager.getBy(`[data-layer-name="${layer.name}"] .layercontent`);
+        if (!layerContent) {
             console.warn(`Could not find DOM Node for layer ${layer.name}`);
             return;
         }
-        layerItem.classList.toggle("visible", layer.state.visible);
-        layerItem.classList.toggle("locked", layer.state.locked);
-        layerItem.style.opacity = layer.state.opacity;
+        layerContent.classList.toggle("visible", layer.state.visible);
+        layerContent.classList.toggle("locked", layer.state.locked);
+        layerContent.style.opacity = layer.state.opacity;
 
-        layer.renderContent(layerItem);
+        layer.renderContent(layerContent);
     }
 }

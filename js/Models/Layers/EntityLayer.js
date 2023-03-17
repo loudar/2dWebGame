@@ -1,5 +1,5 @@
 import {Layer} from "./Layer.js";
-import {LayerTypes} from "../Enums/LayerTypes.js";
+import {LayerTypes} from "../../Enums/LayerTypes.js";
 
 export class EntityLayer extends Layer {
     constructor(name) {
@@ -33,5 +33,17 @@ export class EntityLayer extends Layer {
 
     getEntitiesByType(type) {
         return this.entities.filter(e => e.type === type);
+    }
+
+    renderContent(layerItem) {
+        layerItem.innerHTML = "";
+        this.entities.forEach(entity => {
+            const entityElement = entity.render();
+            if (entityElement) {
+                layerItem.appendChild(entityElement);
+            } else {
+                console.warn("Entity ", entity," does not render to an element. (Constructor: ", entity.constructor, ")");
+            }
+        });
     }
 }

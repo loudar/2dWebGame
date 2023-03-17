@@ -10,4 +10,8 @@ export class DataEntries {
     static get APP_DOM() {
         return "appDom";
     }
+
+    static get ASPECT_RATIO() {
+        return "aspectRatio";
+    }
 }

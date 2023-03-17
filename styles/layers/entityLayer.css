@@ -1,0 +1,7 @@
+.entity {
+    border: 1px solid transparent;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    user-select: none;
+}

@@ -1,7 +1,7 @@
-import {DataManager} from "../static/DataManager.js";
+import {DataManager} from "../../static/DataManager.js";
 import {LayerState} from "./LayerState.js";
-import {TypeValidator} from "../Meta/TypeValidator.js";
-import {LayerTypes} from "../Enums/LayerTypes.js";
+import {TypeValidator} from "../../Meta/TypeValidator.js";
+import {LayerTypes} from "../../Enums/LayerTypes.js";
 
 export class Layer {
     name;
