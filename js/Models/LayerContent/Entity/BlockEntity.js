@@ -15,7 +15,14 @@ export class BlockEntity extends Entity {
     }
 
     render() {
-        return ElementApi.create(EntityLayerElements.blockEntity, this);
+        const existingElement = document.getElementById(this.id);
+        if (existingElement) {
+            this.update(existingElement);
+            return existingElement;
+        }
+        const newElement = ElementApi.create(EntityLayerElements.blockEntity, this);
+        this.update(newElement);
+        return newElement;
     }
 
     getSize() {
@@ -34,5 +41,9 @@ export class BlockEntity extends Entity {
     setTexture(texture) {
         TypeValidator.validateType(texture, Texture);
         this.texture = texture;
+    }
+
+    update(node) {
+        super.update(node);
     }
 }

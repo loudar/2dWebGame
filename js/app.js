@@ -38,7 +38,7 @@ const blockEntity2 = new BlockEntity("test", new Size3D(1, 2), new Texture("#fff
 entityLayer.addEntity(blockEntity2);
 
 const characterEntity = new CharacterEntity("test", new Size3D(1, 2), new CharacterTexture());
-characterEntity.setAsPlayer();
+characterEntity.setAsPlayer(true);
 entityLayer.addEntity(characterEntity);
 
 LayerManager.addLayer(entityLayer);

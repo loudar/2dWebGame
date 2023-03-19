@@ -46,4 +46,8 @@ export class EntityLayer extends Layer {
             }
         });
     }
+
+    update() {
+        this.entities.forEach(entity => entity.update());
+    }
 }

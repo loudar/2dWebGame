@@ -42,4 +42,7 @@ export class Layer {
 
     renderContent(layerItem) {
     }
+
+    update() {
+    }
 }
