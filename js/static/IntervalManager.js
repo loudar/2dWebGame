@@ -2,9 +2,9 @@ import {DataManager} from "./DataManager.js";
 
 export class IntervalManager {
     static startInterval(callback, interval) {
-        const intervalObj = setInterval(callback, interval);
-        DataManager.addToArrayKey("intervals", intervalObj);
-        return intervalObj;
+        const intervalId = setInterval(callback, interval);
+        DataManager.addToArrayKey("intervals", intervalId);
+        return intervalId;
     }
 
     static stopAllIntervals() {

@@ -4,7 +4,6 @@ import {DataManager} from "./static/DataManager.js";
 import {DataEntries} from "./Enums/DataEntries.js";
 import {UpdateManager} from "./static/UpdateManager.js";
 import {Image} from "./Models/LayerContent/Image/Image.js";
-import {StyleManager} from "./static/StyleManager.js";
 import {AspectRatioHelper} from "./Helpers/AspectRatioHelper.js";
 import {EntityLayer} from "./Models/Layers/EntityLayer.js";
 import {Size3D} from "./Models/Size3D.js";
@@ -18,34 +17,41 @@ import {IntervalManager} from "./static/IntervalManager.js";
 import {UiLayer} from "./Models/Layers/UiLayer.js";
 import {UiLayerElements} from "./JensElements/LayerContentElements/UiLayerElements.js";
 import {UUID} from "./Helpers/UUID.js";
+import {PositionConstraint} from "./Models/Constraints/PositionConstraint.js";
+import {GameManager} from "./static/GameManager.js";
 
-StyleManager.initialize();
-
-const appDom = document.getElementById("app");
-DataManager.addKey(DataEntries.APP_DOM, appDom);
+GameManager.create();
+const gameOptions = DataManager.getKey(DataEntries.GAME_OPTIONS);
 
 const imgSource = "assets/images/Stage_Basement_room.webp";
 const image = new Image(imgSource);
 const aspectRatio = await AspectRatioHelper.getAspectRatioFromImageSource(imgSource);
-DataManager.addKey(DataEntries.ASPECT_RATIO, aspectRatio);
+DataManager.addOrUpdateKey(DataEntries.ASPECT_RATIO, aspectRatio);
 image.setFixedSize(AspectRatioHelper.getWidthFromHeightOrWidthAsMin(window.innerWidth, window.innerHeight, aspectRatio), AspectRatioHelper.getHeightFromWidthOrHeightAsMin(window.innerWidth, window.innerHeight, aspectRatio), e => {
     image.setFixedSize(AspectRatioHelper.getWidthFromHeightOrWidthAsMin(window.innerWidth, window.innerHeight, aspectRatio), AspectRatioHelper.getHeightFromWidthOrHeightAsMin(window.innerWidth, window.innerHeight, aspectRatio));
 });
 const imageLayer = new ImageLayer("testImage", image);
-LayerManager.addLayer(imageLayer);
 
 const entityLayer = new EntityLayer("testEntity");
 
-const blockEntity = new BlockEntity("test", new Size3D(1, 2), new Texture("#ff0"), new Coordinates3D(2, 0), new Rotation(45));
-entityLayer.addEntity(blockEntity);
-const blockEntity2 = new BlockEntity("test", new Size3D(1, 2), new Texture("#fff"), new Coordinates3D(50, 0), new Rotation(0));
+const blockEntity2 = new BlockEntity("test", new Texture("#fff"), new Size3D(100, 100), new Coordinates3D(100, 100), new Rotation(0));
 entityLayer.addEntity(blockEntity2);
 
-const characterEntity = new CharacterEntity("test", new Size3D(2, 2), new CharacterTexture());
+const characterEntity = new CharacterEntity("test", new CharacterTexture(), new Size3D(2, 2));
 characterEntity.setAsPlayer();
+const xConstraint = gameOptions.gridSize / 2;
+const yConstraint = (gameOptions.gridSize / 2) / aspectRatio;
+const wallConstraint = new PositionConstraint(-xConstraint, xConstraint, -yConstraint, yConstraint);
+const floorFactor = {
+    x: 0.775,
+    y: 0.65
+};
+const floorConstraint = new PositionConstraint(-xConstraint * floorFactor.x, xConstraint * floorFactor.x, -yConstraint * floorFactor.y, yConstraint * floorFactor.y);
+characterEntity.addConstraint(floorConstraint);
+characterEntity.addConstraint(wallConstraint);
+const boxConstraint = blockEntity2.getConstraint();
+characterEntity.addConstraint(boxConstraint);
 entityLayer.addEntity(characterEntity);
-
-LayerManager.addLayer(entityLayer);
 
 const uiLayer = new UiLayer("testUi");
 const textId = UUID.new.generate();
@@ -57,9 +63,13 @@ characterEntity.hook.setOnMove(c => {
         text: `x: ${c.position.x} y: ${c.position.y}`
     });
 });
-LayerManager.addLayer(uiLayer);
 
+LayerManager.addLayers(imageLayer, entityLayer, uiLayer);
 UpdateManager.updateLayerList();
+let lastIntervalRun = Date.now();
 IntervalManager.startInterval(() => {
+    const now = Date.now();
     UpdateManager.updateTick();
-}, 1000 / 60);
+    const delta = now - lastIntervalRun;
+    lastIntervalRun = now;
+}, 1000 / 120);

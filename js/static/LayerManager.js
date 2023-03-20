@@ -1,5 +1,7 @@
 import {DataManager} from "./DataManager.js";
 import {DataEntries} from "../Enums/DataEntries.js";
+import {TypeValidator} from "../Meta/TypeValidator.js";
+import {Layer} from "../Models/Layers/Layer.js";
 
 export class LayerManager {
     static addLayer(layer) {
@@ -74,6 +76,13 @@ export class LayerManager {
         if (index < layers.length - 1) {
             layers.splice(index, 1);
             layers.unshift(layer);
+        }
+    }
+
+    static addLayers() {
+        for (let layer of arguments) {
+            TypeValidator.validateInstanceOf(layer, Layer);
+            this.addLayer(layer);
         }
     }
 }

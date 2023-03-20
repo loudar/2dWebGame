@@ -53,17 +53,19 @@ export class AspectRatioHelper {
     }
 
     static getWindowScale() {
+        const gameOptions = DataManager.getKey(DataEntries.GAME_OPTIONS);
         if (DataManager.getKey(DataEntries.ASPECT_RATIO) === undefined) {
             const smallestSide = Math.min(window.innerWidth, window.innerHeight);
             return {
-                x: smallestSide / 100,
-                y: smallestSide / 100
+                x: smallestSide / gameOptions.gridSize,
+                y: smallestSide / gameOptions.gridSize,
+                ar: 1
             }
         } else {
             const aspectRatio = DataManager.getKey(DataEntries.ASPECT_RATIO);
             return {
-                x: this.getWidthFromHeightOrWidthAsMin(window.innerWidth, window.innerHeight, aspectRatio) / 100,
-                y: this.getHeightFromWidthOrHeightAsMin(window.innerWidth, window.innerHeight, aspectRatio) / 100,
+                x: this.getWidthFromHeightOrWidthAsMin(window.innerWidth, window.innerHeight, aspectRatio) / gameOptions.gridSize,
+                y: this.getHeightFromWidthOrHeightAsMin(window.innerWidth, window.innerHeight, aspectRatio) / gameOptions.gridSize,
                 ar: aspectRatio
             }
         }

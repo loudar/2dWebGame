@@ -7,6 +7,7 @@ export class Layer {
     name;
 
     constructor(type, name) {
+        // TODO: validate with class, not custom array
         const layerTypes = [
             LayerTypes.image,
             LayerTypes.entity,

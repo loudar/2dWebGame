@@ -1,19 +1,18 @@
 import {Entity} from "./Entity.js";
-import {Size3D} from "../../Size3D.js";
 import {CharacterTexture} from "../../CharacterTexture.js";
 import {TypeValidator} from "../../../Meta/TypeValidator.js";
 import {ElementFactory} from "../../../static/ElementFactory.js";
 import {EntityLayerElements} from "../../../JensElements/LayerContentElements/EntityLayerElements.js";
 import {AspectRatioHelper} from "../../../Helpers/AspectRatioHelper.js";
-import {CharacterOptions} from "../../CharacterOptions.js";
+import {CharacterOptions} from "../../Options/CharacterOptions.js";
+import {CharacterKeys} from "../../Keys/CharacterKeys.js";
 
 export class CharacterEntity extends Entity {
-    constructor(name, size = new Size3D(), texture = new CharacterTexture(), position, rotation, scale, state) {
-        super(name, position, rotation, scale, state);
-        TypeValidator.validateType(size, Size3D);
+    constructor(name, texture = new CharacterTexture(), size, position, rotation, scale, state) {
+        super(name, size, position, rotation, scale, state);
         TypeValidator.validateType(texture, CharacterTexture);
-        this.size = size;
         this.texture = texture;
+        this.keys = new CharacterKeys();
     }
 
     render() {
@@ -29,6 +28,8 @@ export class CharacterEntity extends Entity {
     }
 
     update(node) {
+        this.changed = false;
+        this.updatePositionByKeys();
         super.update(node);
         const windowScale = AspectRatioHelper.getWindowScale();
         node.style.width = windowScale.x * this.size.width + "px";
@@ -51,50 +52,45 @@ export class CharacterEntity extends Entity {
     keydownHandler(event) {
         switch (event.key) {
             case "w":
-                if (this.position.dY >= -1) {
-                    this.changed = true;
-                    this.position.dY += -1;
-                }
+                this.keys.up = true;
                 break;
             case "a":
-                if (this.position.dX >= -1) {
-                    this.changed = true;
-                    this.position.dX += -1;
-                }
+                this.keys.left = true;
                 break;
             case "s":
-                if (this.position.dY < 1) {
-                    this.changed = true;
-                    this.position.dY += 1;
-                }
+                this.keys.down = true;
                 break;
             case "d":
-                if (this.position.dX < 1) {
-                    this.changed = true;
-                    this.position.dX += 1;
-                }
+                this.keys.right = true;
                 break;
         }
+        this.updatePositionByKeys();
     }
 
     keyupHandler(event) {
         switch (event.key) {
             case "w":
-                this.changed = true;
-                this.position.dY += 1;
+                this.keys.up = false;
                 break;
             case "a":
-                this.changed = true;
-                this.position.dX += 1;
+                this.keys.left = false;
                 break;
             case "s":
-                this.changed = true;
-                this.position.dY += -1;
+                this.keys.down = false;
                 break;
             case "d":
-                this.changed = true;
-                this.position.dX += -1;
+                this.keys.right = false;
                 break;
+        }
+        this.updatePositionByKeys();
+    }
+
+    updatePositionByKeys() {
+        this.position.dX = this.keys.left ? -1 : this.keys.right ? 1 : 0;
+        this.position.dY = this.keys.up ? -1 : this.keys.down ? 1 : 0;
+        this.position.dZ = 0;
+        if (this.position.dX !== 0 || this.position.dY !== 0 || this.position.dZ !== 0) {
+            this.changed = true;
         }
     }
 

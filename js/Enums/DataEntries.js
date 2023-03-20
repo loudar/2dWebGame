@@ -1,4 +1,8 @@
 export class DataEntries {
+    static get GAME_OPTIONS() {
+        return "gameOptions";
+    }
+
     static get LAYERS() {
         return "layers";
     }

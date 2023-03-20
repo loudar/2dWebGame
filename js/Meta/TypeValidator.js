@@ -7,4 +7,13 @@ export class TypeValidator {
             throw new Error(`Invalid type: ${typeof value} with value ${value} (expected ${constructor})`);
         }
     }
+
+    static validateInstanceOf(instance, Class) {
+        if (instance === undefined || instance === null) {
+            throw new Error(`Invalid value: ${instance} (expected instance of ${Class})`);
+        }
+        if (!(instance instanceof Class)) {
+            throw new Error(`Invalid type: ${typeof instance} with value ${instance} (expected instance of ${Class})`);
+        }
+    }
 }

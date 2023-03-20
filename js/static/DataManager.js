@@ -7,7 +7,7 @@ export class DataManager {
         }
     }
 
-    static addKey(key, data) {
+    static addOrUpdateKey(key, data) {
         this.ensureDataStore();
         this.dataStore[key] = data;
     }
