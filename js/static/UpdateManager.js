@@ -1,5 +1,5 @@
 import {DataManager} from "./DataManager.js";
-import {ElementApi} from "./ElementFactory.js";
+import {ElementFactory} from "./ElementFactory.js";
 import {SharedElements} from "../JensElements/SharedElements.js";
 import {DataEntries} from "../Enums/DataEntries.js";
 import {EntityManager} from "./EntityManager.js";
@@ -13,7 +13,7 @@ export class UpdateManager {
         const appDom = DataManager.getKey(DataEntries.APP_DOM);
         appDom.innerHTML = "";
         DataManager.getArrayKey("layers").forEach(layer => {
-            const layerItem = ElementApi.create(SharedElements.layer, layer);
+            const layerItem = ElementFactory.create(SharedElements.layer, layer);
             appDom.appendChild(layerItem);
 
             UpdateManager.updateLayer(layer);

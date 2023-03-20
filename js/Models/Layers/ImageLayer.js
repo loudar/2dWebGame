@@ -1,5 +1,5 @@
 import {Layer} from "./Layer.js";
-import {ElementApi} from "../../static/ElementFactory.js";
+import {ElementFactory} from "../../static/ElementFactory.js";
 import {ImageLayerElements} from "../../JensElements/LayerContentElements/ImageLayerElements.js";
 import {TypeValidator} from "../../Meta/TypeValidator.js";
 import {LayerTypes} from "../../Enums/LayerTypes.js";
@@ -22,7 +22,7 @@ export class ImageLayer extends Layer {
 
     renderContent(layerItem) {
         layerItem.innerHTML = "";
-        const image = ElementApi.create(ImageLayerElements.image, this.image);
+        const image = ElementFactory.create(ImageLayerElements.image, this.image);
         layerItem.appendChild(image);
     }
 }

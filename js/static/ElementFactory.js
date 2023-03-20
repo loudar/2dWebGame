@@ -2,7 +2,7 @@ import {DataManager} from "./DataManager.js";
 import {Jens} from "https://jensjs.com/latest/jens.js";
 import {DataEntries} from "../Enums/DataEntries.js";
 
-export class ElementApi {
+export class ElementFactory {
     static initialize() {
         const jens = new Jens();
         DataManager.addKey(DataEntries.ELEMENT_FACTORY, jens);

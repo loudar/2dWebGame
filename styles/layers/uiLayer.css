@@ -1,0 +1,85 @@
+:root {
+    --gap-small: 5px;
+    --gap-normal: 10px;
+    --gap-large: 20px;
+    --foreground: #000;
+    --background: #fff;
+}
+
+.abs-top-lef {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.abs-top-rig {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.abs-bot-lef {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.abs-bot-rig {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.abs-top {
+    position: absolute;
+    top: 0;
+}
+
+.abs-bot {
+    position: absolute;
+    bottom: 0;
+}
+
+.abs-lef {
+    position: absolute;
+    left: 0;
+}
+
+.abs-rig {
+    position: absolute;
+    right: 0;
+}
+
+.margin-small {
+    margin: var(--gap-small);
+}
+
+.margin-normal {
+    margin: var(--gap-normal);
+}
+
+.margin-large {
+    margin: var(--gap-large);
+}
+
+.padding-small {
+    padding: var(--gap-small);
+}
+
+.padding-normal {
+    padding: var(--gap-normal);
+}
+
+.padding-large {
+    padding: var(--gap-large);
+}
+
+.contrast {
+    color: var(--foreground);
+    background-color: var(--background);
+}
+
+.contrast-inverted {
+    color: var(--background);
+    background-color: var(--foreground);
+}

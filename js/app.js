@@ -15,6 +15,9 @@ import {Texture} from "./Models/Texture.js";
 import {Coordinates3D} from "./Models/Coordinates3D.js";
 import {Rotation} from "./Models/Rotation.js";
 import {IntervalManager} from "./static/IntervalManager.js";
+import {UiLayer} from "./Models/Layers/UiLayer.js";
+import {UiLayerElements} from "./JensElements/LayerContentElements/UiLayerElements.js";
+import {UUID} from "./Helpers/UUID.js";
 
 StyleManager.initialize();
 
@@ -38,11 +41,23 @@ entityLayer.addEntity(blockEntity);
 const blockEntity2 = new BlockEntity("test", new Size3D(1, 2), new Texture("#fff"), new Coordinates3D(50, 0), new Rotation(0));
 entityLayer.addEntity(blockEntity2);
 
-const characterEntity = new CharacterEntity("test", new Size3D(1, 2), new CharacterTexture());
-characterEntity.setAsPlayer(true);
+const characterEntity = new CharacterEntity("test", new Size3D(2, 2), new CharacterTexture());
+characterEntity.setAsPlayer();
 entityLayer.addEntity(characterEntity);
 
 LayerManager.addLayer(entityLayer);
+
+const uiLayer = new UiLayer("testUi");
+const textId = UUID.new.generate();
+uiLayer.addTemplate(textId, UiLayerElements.text, {
+    id: textId, text: 'test'
+});
+characterEntity.hook.setOnMove(c => {
+    uiLayer.updateElement(textId, {
+        text: `x: ${c.position.x} y: ${c.position.y}`
+    });
+});
+LayerManager.addLayer(uiLayer);
 
 UpdateManager.updateLayerList();
 IntervalManager.startInterval(() => {

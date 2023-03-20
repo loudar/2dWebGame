@@ -63,7 +63,8 @@ export class AspectRatioHelper {
             const aspectRatio = DataManager.getKey(DataEntries.ASPECT_RATIO);
             return {
                 x: this.getWidthFromHeightOrWidthAsMin(window.innerWidth, window.innerHeight, aspectRatio) / 100,
-                y: this.getHeightFromWidthOrHeightAsMin(window.innerWidth, window.innerHeight, aspectRatio) / 100
+                y: this.getHeightFromWidthOrHeightAsMin(window.innerWidth, window.innerHeight, aspectRatio) / 100,
+                ar: aspectRatio
             }
         }
     }

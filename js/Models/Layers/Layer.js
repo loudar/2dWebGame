@@ -9,7 +9,8 @@ export class Layer {
     constructor(type, name) {
         const layerTypes = [
             LayerTypes.image,
-            LayerTypes.entity
+            LayerTypes.entity,
+            LayerTypes.ui
         ];
         if (!layerTypes.includes(type)) {
             throw new Error(`Invalid layer type ${type}, must be one of ${layerTypes.join(", ")}`);

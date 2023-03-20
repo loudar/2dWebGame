@@ -2,7 +2,7 @@ import {Entity} from "./Entity.js";
 import {Size3D} from "../../Size3D.js";
 import {CharacterTexture} from "../../CharacterTexture.js";
 import {TypeValidator} from "../../../Meta/TypeValidator.js";
-import {ElementApi} from "../../../static/ElementFactory.js";
+import {ElementFactory} from "../../../static/ElementFactory.js";
 import {EntityLayerElements} from "../../../JensElements/LayerContentElements/EntityLayerElements.js";
 import {AspectRatioHelper} from "../../../Helpers/AspectRatioHelper.js";
 import {CharacterOptions} from "../../CharacterOptions.js";
@@ -14,92 +14,92 @@ export class CharacterEntity extends Entity {
         TypeValidator.validateType(texture, CharacterTexture);
         this.size = size;
         this.texture = texture;
-        this.slidePosition = false;
     }
 
     render() {
+        super.render();
         const existingElement = document.getElementById(this.id);
         if (existingElement) {
             this.update(existingElement);
             return existingElement;
         }
-        const newElement = ElementApi.create(EntityLayerElements.characterEntity, this);
+        const newElement = ElementFactory.create(EntityLayerElements.characterEntity, this);
         this.update(newElement);
         return newElement;
     }
 
     update(node) {
         super.update(node);
-        node.style.width = AspectRatioHelper.getWindowScale().x * this.size.width + "px";
-        node.style.height = AspectRatioHelper.getWindowScale().y * this.size.height + "px";
+        const windowScale = AspectRatioHelper.getWindowScale();
+        node.style.width = windowScale.x * this.size.width + "px";
+        node.style.height = windowScale.y * windowScale.ar * this.size.height + "px";
         node.style.backgroundColor = this.texture.color;
         node.style.backgroundImage = this.texture.image ? `url(${this.texture.image})` : "none";
         node.style.borderColor = this.texture.borderColor;
     }
 
-    setAsPlayer(slide = false, playerOptions = new CharacterOptions()) {
-        this.slidePosition = slide;
-        window.addEventListener("keydown", (event) => {
-            switch (event.key) {
-                case "w":
-                    if (this.position.dY !== -1) {
-                        this.changed = true;
-                        this.position.dY = -1;
-                    }
-                    break;
-                case "a":
-                    if (this.position.dX !== -1) {
-                        this.changed = true;
-                        this.position.dX = -1;
-                    }
-                    break;
-                case "s":
-                    if (this.position.dY !== 1) {
-                        this.changed = true;
-                        this.position.dY = 1;
-                    }
-                    break;
-                case "d":
-                    if (this.position.dX !== 1) {
-                        this.changed = true;
-                        this.position.dX = 1;
-                    }
-                    break;
-            }
-            if (this.changed && this.onVelocityChange) {
-                this.onVelocityChange();
-            }
-        });
-        window.addEventListener("keyup", (event) => {
-            switch (event.key) {
-                case "w":
-                    if (this.position.dY !== 0) {
-                        this.changed = true;
-                        this.position.dY = 0;
-                    }
-                    break;
-                case "a":
-                    if (this.position.dX !== 0) {
-                        this.changed = true;
-                        this.position.dX = 0;
-                    }
-                    break;
-                case "s":
-                    if (this.position.dY !== 0) {
-                        this.changed = true;
-                        this.position.dY = 0;
-                    }
-                    break;
-                case "d":
-                    if (this.position.dX !== 0) {
-                        this.changed = true;
-                        this.position.dX = 0;
-                    }
-                    break;
-            }
-            if (this.changed && this.onVelocityChange) {
-                this.onVelocityChange();
-            }
-        });
+    /**
+     * Only call this method once. Otherwise, call removeAsPlayer() first.
+     * @param characterOptions {CharacterOptions} Options for the player.
+     */
+    setAsPlayer(characterOptions = new CharacterOptions()) {
+        this.options = characterOptions;
+        window.addEventListener("keydown", this.keydownHandler.bind(this));
+        window.addEventListener("keyup", this.keyupHandler.bind(this));
+    }
+
+    keydownHandler(event) {
+        switch (event.key) {
+            case "w":
+                if (this.position.dY >= -1) {
+                    this.changed = true;
+                    this.position.dY += -1;
+                }
+                break;
+            case "a":
+                if (this.position.dX >= -1) {
+                    this.changed = true;
+                    this.position.dX += -1;
+                }
+                break;
+            case "s":
+                if (this.position.dY < 1) {
+                    this.changed = true;
+                    this.position.dY += 1;
+                }
+                break;
+            case "d":
+                if (this.position.dX < 1) {
+                    this.changed = true;
+                    this.position.dX += 1;
+                }
+                break;
+        }
+    }
+
+    keyupHandler(event) {
+        switch (event.key) {
+            case "w":
+                this.changed = true;
+                this.position.dY += 1;
+                break;
+            case "a":
+                this.changed = true;
+                this.position.dX += 1;
+                break;
+            case "s":
+                this.changed = true;
+                this.position.dY += -1;
+                break;
+            case "d":
+                this.changed = true;
+                this.position.dX += -1;
+                break;
+        }
+    }
+
+    removeAsPlayer() {
+        window.removeEventListener("keydown", this.keydownHandler.bind(this));
+        window.removeEventListener("keyup", this.keyupHandler.bind(this));
     }
 }

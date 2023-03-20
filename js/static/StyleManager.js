@@ -5,6 +5,7 @@ export class StyleManager {
         this.registerStylesheet("global", "global");
         this.registerLayerTypeStylesheet(LayerTypes.entity);
         this.registerLayerTypeStylesheet(LayerTypes.image);
+        this.registerLayerTypeStylesheet(LayerTypes.ui);
     }
 
     static registerLayerTypeStylesheet(layertype) {

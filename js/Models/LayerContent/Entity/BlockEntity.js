@@ -2,7 +2,7 @@ import {Entity} from "./Entity.js";
 import {Size3D} from "../../Size3D.js";
 import {TypeValidator} from "../../../Meta/TypeValidator.js";
 import {EntityLayerElements} from "../../../JensElements/LayerContentElements/EntityLayerElements.js";
-import {ElementApi} from "../../../static/ElementFactory.js";
+import {ElementFactory} from "../../../static/ElementFactory.js";
 import {Texture} from "../../Texture.js";
 
 export class BlockEntity extends Entity {
@@ -15,12 +15,13 @@ export class BlockEntity extends Entity {
     }
 
     render() {
+        super.render();
         const existingElement = document.getElementById(this.id);
         if (existingElement) {
             this.update(existingElement);
             return existingElement;
         }
-        const newElement = ElementApi.create(EntityLayerElements.blockEntity, this);
+        const newElement = ElementFactory.create(EntityLayerElements.blockEntity, this);
         this.update(newElement);
         return newElement;
     }
