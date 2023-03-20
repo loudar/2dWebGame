@@ -17,15 +17,23 @@ export class Entity {
         this.rotation = rotation;
         this.scale = scale;
         this.state = state;
+        this.changed = false;
     }
 
     render() {
     }
 
     update(node) {
+        this.updatePosition();
         const scale = AspectRatioHelper.getWindowScale();
         const x = this.position.x * scale.x;
         const y = this.position.y * scale.y;
         node.style.transform = `translate(${x}px, ${y}px) scale(${this.scale}) rotate(${this.rotation.zDegrees}deg) translate(-50%, -50%)`;
+    }
+
+    updatePosition() {
+        this.position.setX(this.position.x + this.position.dX);
+        this.position.setY(this.position.y + this.position.dY);
+        this.position.setZ(this.position.z + this.position.dZ);
     }
 }

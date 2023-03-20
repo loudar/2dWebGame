@@ -6,7 +6,6 @@ import {ElementApi} from "../../../static/ElementFactory.js";
 import {EntityLayerElements} from "../../../JensElements/LayerContentElements/EntityLayerElements.js";
 import {AspectRatioHelper} from "../../../Helpers/AspectRatioHelper.js";
 import {CharacterOptions} from "../../CharacterOptions.js";
-import {EntityManager} from "../../../static/EntityManager.js";
 
 export class CharacterEntity extends Entity {
     constructor(name, size = new Size3D(), texture = new CharacterTexture(), position, rotation, scale, state) {
@@ -43,22 +42,63 @@ export class CharacterEntity extends Entity {
         window.addEventListener("keydown", (event) => {
             switch (event.key) {
                 case "w":
-                    this.position.setY(this.position.y - 1);
-                    this.render();
-                    EntityManager.update();
+                    if (this.position.dY !== -1) {
+                        this.changed = true;
+                        this.position.dY = -1;
+                    }
                     break;
                 case "a":
-                    this.position.setX(this.position.x - 1);
-                    this.render();
+                    if (this.position.dX !== -1) {
+                        this.changed = true;
+                        this.position.dX = -1;
+                    }
                     break;
                 case "s":
-                    this.position.setY(this.position.y + 1);
-                    this.render();
+                    if (this.position.dY !== 1) {
+                        this.changed = true;
+                        this.position.dY = 1;
+                    }
                     break;
                 case "d":
-                    this.position.setX(this.position.x + 1);
-                    this.render();
+                    if (this.position.dX !== 1) {
+                        this.changed = true;
+                        this.position.dX = 1;
+                    }
                     break;
+            }
+            if (this.changed && this.onVelocityChange) {
+                this.onVelocityChange();
+            }
+        });
+        window.addEventListener("keyup", (event) => {
+            switch (event.key) {
+                case "w":
+                    if (this.position.dY !== 0) {
+                        this.changed = true;
+                        this.position.dY = 0;
+                    }
+                    break;
+                case "a":
+                    if (this.position.dX !== 0) {
+                        this.changed = true;
+                        this.position.dX = 0;
+                    }
+                    break;
+                case "s":
+                    if (this.position.dY !== 0) {
+                        this.changed = true;
+                        this.position.dY = 0;
+                    }
+                    break;
+                case "d":
+                    if (this.position.dX !== 0) {
+                        this.changed = true;
+                        this.position.dX = 0;
+                    }
+                    break;
+            }
+            if (this.changed && this.onVelocityChange) {
+                this.onVelocityChange();
             }
         });
     }

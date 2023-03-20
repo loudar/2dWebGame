@@ -48,6 +48,16 @@ export class EntityLayer extends Layer {
     }
 
     update() {
-        this.entities.forEach(entity => entity.update());
+        this.entities.forEach(entity => {
+            if (!entity.changed) {
+                return;
+            }
+            const entityNode = document.getElementById(entity.id);
+            if (entityNode) {
+                entity.update(entityNode);
+            } else {
+                console.warn("Entity ", entity, " does not have a corresponding element. (Constructor: ", entity.constructor, ")");
+            }
+        });
     }
 }

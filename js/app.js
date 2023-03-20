@@ -14,6 +14,7 @@ import {BlockEntity} from "./Models/LayerContent/Entity/BlockEntity.js";
 import {Texture} from "./Models/Texture.js";
 import {Coordinates3D} from "./Models/Coordinates3D.js";
 import {Rotation} from "./Models/Rotation.js";
+import {IntervalManager} from "./static/IntervalManager.js";
 
 StyleManager.initialize();
 
@@ -44,3 +45,6 @@ entityLayer.addEntity(characterEntity);
 LayerManager.addLayer(entityLayer);
 
 UpdateManager.updateLayerList();
+IntervalManager.startInterval(() => {
+    UpdateManager.updateTick();
+}, 1000 / 60);

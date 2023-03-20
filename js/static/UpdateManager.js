@@ -2,8 +2,13 @@ import {DataManager} from "./DataManager.js";
 import {ElementApi} from "./ElementFactory.js";
 import {SharedElements} from "../JensElements/SharedElements.js";
 import {DataEntries} from "../Enums/DataEntries.js";
+import {EntityManager} from "./EntityManager.js";
 
 export class UpdateManager {
+    static updateTick() {
+        EntityManager.update();
+    }
+
     static updateLayerList() {
         const appDom = DataManager.getKey(DataEntries.APP_DOM);
         appDom.innerHTML = "";
