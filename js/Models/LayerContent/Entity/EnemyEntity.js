@@ -1,5 +1,5 @@
 import {Entity} from "./Entity.js";
-import {CharacterTexture} from "../../CharacterTexture.js";
+import {CharacterTexture} from "../../Properties/Textures/CharacterTexture.js";
 import {TypeValidator} from "../../../Meta/TypeValidator.js";
 import {ElementFactory} from "../../../static/ElementFactory.js";
 import {EntityLayerElements} from "../../../JensElements/LayerContentElements/EntityLayerElements.js";

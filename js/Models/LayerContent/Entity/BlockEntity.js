@@ -1,9 +1,9 @@
 import {Entity} from "./Entity.js";
-import {Size3D} from "../../Size3D.js";
+import {Size3D} from "../../Properties/Size3D.js";
 import {TypeValidator} from "../../../Meta/TypeValidator.js";
 import {EntityLayerElements} from "../../../JensElements/LayerContentElements/EntityLayerElements.js";
 import {ElementFactory} from "../../../static/ElementFactory.js";
-import {Texture} from "../../Texture.js";
+import {Texture} from "../../Properties/Textures/Texture.js";
 import {EntityTypes} from "../../../Enums/EntityTypes.js";
 
 export class BlockEntity extends Entity {

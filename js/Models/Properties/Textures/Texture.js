@@ -1,4 +1,4 @@
-import {TypeValidator} from "../Meta/TypeValidator.js";
+import {TypeValidator} from "../../../Meta/TypeValidator.js";
 
 export class Texture {
     constructor(color = "#000", image = null, borderColor = "transparent") {

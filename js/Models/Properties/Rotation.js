@@ -1,4 +1,4 @@
-import {TypeValidator} from "../Meta/TypeValidator.js";
+import {TypeValidator} from "../../Meta/TypeValidator.js";
 
 export class Rotation {
     constructor(zDegrees = 0, yDegrees = 0, xDegrees = 0) {

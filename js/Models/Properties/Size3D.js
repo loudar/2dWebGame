@@ -1,4 +1,4 @@
-import {TypeValidator} from "../Meta/TypeValidator.js";
+import {TypeValidator} from "../../Meta/TypeValidator.js";
 
 export class Size3D {
     constructor(width = 0, height = 0, depth = 0) {

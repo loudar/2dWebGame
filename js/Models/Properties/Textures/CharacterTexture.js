@@ -1,5 +1,5 @@
 import {Texture} from "./Texture.js";
-import {TypeValidator} from "../Meta/TypeValidator.js";
+import {TypeValidator} from "../../../Meta/TypeValidator.js";
 
 export class CharacterTexture extends Texture {
     constructor(color = "#0ff", image = null, borderColor = "transparent") {

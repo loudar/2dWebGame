@@ -1,4 +1,4 @@
-import {TypeValidator} from "../Meta/TypeValidator.js";
+import {TypeValidator} from "../../Meta/TypeValidator.js";
 
 export class Coordinates3D {
     constructor(x = 0, y = 0, z = 0, dX = 0, dY = 0, dZ = 0) {
