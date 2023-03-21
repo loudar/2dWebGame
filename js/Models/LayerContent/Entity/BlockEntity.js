@@ -4,24 +4,13 @@ import {TypeValidator} from "../../../Meta/TypeValidator.js";
 import {EntityLayerElements} from "../../../JensElements/LayerContentElements/EntityLayerElements.js";
 import {ElementFactory} from "../../../static/ElementFactory.js";
 import {Texture} from "../../Texture.js";
-import {InvertedPositionConstraint} from "../../Constraints/InvertedPositionConstraint.js";
+import {EntityTypes} from "../../../Enums/EntityTypes.js";
 
 export class BlockEntity extends Entity {
     constructor(name, texture = new Texture(), size, position, rotation, scale, state) {
-        super(name, size, position, rotation, scale, state);
+        super(EntityTypes.block, name, size, position, rotation, scale, state);
         TypeValidator.validateType(texture, Texture);
         this.texture = texture;
-    }
-
-    getConstraint() {
-        return new InvertedPositionConstraint(
-            this.position.x - this.size.width / 2,
-            this.position.x + this.size.width / 2,
-            this.position.y - this.size.height / 2,
-            this.position.y + this.size.height / 2,
-            this.position.z - this.size.depth / 2,
-            this.position.z + this.size.depth / 2
-        );
     }
 
     render() {

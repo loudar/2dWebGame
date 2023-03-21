@@ -1,5 +1,6 @@
 import {Layer} from "./Layer.js";
 import {LayerTypes} from "../../Enums/LayerTypes.js";
+import {LayerManager} from "../../static/LayerManager.js";
 
 export class EntityLayer extends Layer {
     constructor(name) {
@@ -13,6 +14,13 @@ export class EntityLayer extends Layer {
 
     removeEntity(entity) {
         this.entities = this.entities.filter(e => e !== entity);
+        document.getElementById(entity.id).remove();
+        const layers = LayerManager.getLayersByType(LayerTypes.entity);
+        layers.forEach(layer => {
+            layer.getEntities().forEach(e => {
+                e.collisions = e.collisions.filter(c => c.entity !== entity);
+            });
+        });
     }
 
     getEntities() {

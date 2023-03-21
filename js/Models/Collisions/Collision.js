@@ -1,4 +1,15 @@
-export class Constraint {
+export class Collision {
+    constructor() {
+        this.entity = null;
+        this.priority = 1;
+        this.nonPhysical = false;
+    }
+
+    lowPriority() {
+        this.priority = 0;
+        return this;
+    }
+
     getClosestBordersDistance(entity, xSuccess, ySuccess, zSuccess) {
         let xDist, yDist, zDist;
         if (!xSuccess) {
@@ -26,5 +37,14 @@ export class Constraint {
         } else {
             return { border: "none", distance: 0 };
         }
+    }
+
+    linkEntity(entity) {
+        this.entity = entity;
+    }
+
+    isNonPhysical() {
+        this.nonPhysical = true;
+        return this;
     }
 }

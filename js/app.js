@@ -17,9 +17,10 @@ import {IntervalManager} from "./static/IntervalManager.js";
 import {UiLayer} from "./Models/Layers/UiLayer.js";
 import {UiLayerElements} from "./JensElements/LayerContentElements/UiLayerElements.js";
 import {UUID} from "./Helpers/UUID.js";
-import {PositionConstraint} from "./Models/Constraints/PositionConstraint.js";
+import {PositionCollision} from "./Models/Collisions/PositionCollision.js";
 import {GameManager} from "./static/GameManager.js";
 import {EnemyEntity} from "./Models/LayerContent/Entity/EnemyEntity.js";
+import {EntityTypes} from "./Enums/EntityTypes.js";
 
 GameManager.create();
 const gameOptions = DataManager.getKey(DataEntries.GAME_OPTIONS);
@@ -38,29 +39,39 @@ const enemyEntity = new EnemyEntity("enemy", new CharacterTexture("#f0f"), new S
 enemyEntity.setSpeed(.5);
 const blockEntity2 = new BlockEntity("test", new Texture("#fff"), new Size3D(100, 100), new Coordinates3D(100, 100), new Rotation(0));
 
-const characterEntity = new CharacterEntity("test", new CharacterTexture(), new Size3D(5, 5));
+const characterEntity = new CharacterEntity("test", new CharacterTexture(), new Size3D(10, 10));
 characterEntity.setAsPlayer();
-const xConstraint = gameOptions.gridSize / 2;
-const yConstraint = (gameOptions.gridSize / 2) / aspectRatio;
-const wallConstraint = new PositionConstraint(
-    Math.floor(-xConstraint),
-    Math.floor(xConstraint),
-    Math.floor(-yConstraint),
-    Math.floor(yConstraint)
+const xCollision = gameOptions.gridSize / 2;
+const yCollision = (gameOptions.gridSize / 2) / aspectRatio;
+const wallCollision = new PositionCollision(
+    Math.floor(-xCollision),
+    Math.floor(xCollision),
+    Math.floor(-yCollision),
+    Math.floor(yCollision)
 ).ignoreZ();
 const floorFactor = {
     x: 0.775,
     y: 0.65
 };
-const floorConstraint = new PositionConstraint(
-    Math.floor(-xConstraint * floorFactor.x),
-    Math.floor(xConstraint * floorFactor.x),
-    Math.floor(-yConstraint * floorFactor.y),
-    Math.floor(yConstraint * floorFactor.y)
-).ignoreZ();
-const boxConstraint = blockEntity2.getConstraint().ignoreZ();
-characterEntity.addConstraints(floorConstraint, boxConstraint);
-enemyEntity.addConstraints(floorConstraint, boxConstraint);
+const floorCollision = new PositionCollision(
+    Math.floor(-xCollision * floorFactor.x),
+    Math.floor(xCollision * floorFactor.x),
+    Math.floor(-yCollision * floorFactor.y),
+    Math.floor(yCollision * floorFactor.y)
+).ignoreZ().lowPriority();
+const boxCollision = blockEntity2.getCollision().ignoreZ().lowPriority();
+const enemyCollision = enemyEntity.getCollision().ignoreZ().isNonPhysical();
+characterEntity.addCollisions(enemyCollision, floorCollision, boxCollision);
+characterEntity.hook.setOnCollide((character, collidingEntity, collision, collisionSuccess) => {
+    if (!collidingEntity) {
+        return;
+    }
+    if (collidingEntity.type === EntityTypes.enemy) {
+        //entityLayer.removeEntity(collidingEntity);
+    }
+});
+const characterCollision = characterEntity.getCollision().ignoreZ().isNonPhysical();
+enemyEntity.addCollisions(floorCollision, boxCollision, characterCollision);
 entityLayer.addEntities(enemyEntity, blockEntity2, characterEntity);
 
 const uiLayer = new UiLayer("testUi");

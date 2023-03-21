@@ -5,10 +5,11 @@ import {ElementFactory} from "../../../static/ElementFactory.js";
 import {EntityLayerElements} from "../../../JensElements/LayerContentElements/EntityLayerElements.js";
 import {CharacterOptions} from "../../Options/CharacterOptions.js";
 import {CharacterKeys} from "../../Keys/CharacterKeys.js";
+import {EntityTypes} from "../../../Enums/EntityTypes.js";
 
 export class CharacterEntity extends Entity {
     constructor(name, texture = new CharacterTexture(), size, position, rotation, scale, state) {
-        super(name, size, position, rotation, scale, state);
+        super(EntityTypes.character, name, size, position, rotation, scale, state);
         TypeValidator.validateType(texture, CharacterTexture);
         this.texture = texture;
         this.keys = new CharacterKeys();

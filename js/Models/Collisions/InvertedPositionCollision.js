@@ -1,6 +1,6 @@
-import {Constraint} from "./Constraint.js";
+import {Collision} from "./Collision.js";
 
-export class InvertedPositionConstraint extends Constraint {
+export class InvertedPositionCollision extends Collision {
     constructor(xMin, xMax, yMin, yMax, zMin, zMax) {
         super();
         this.xMin = xMin || 0;
@@ -9,11 +9,11 @@ export class InvertedPositionConstraint extends Constraint {
         this.yMax = yMax || 0;
         this.zMin = zMin || 0;
         this.zMax = zMax || 0;
+        this.onlyXY = false;
     }
 
     ignoreZ() {
-        this.zMin = Infinity;
-        this.zMax = -Infinity;
+        this.onlyXY = true;
         return this;
     }
 
@@ -23,7 +23,7 @@ export class InvertedPositionConstraint extends Constraint {
         const z = entity.position.z;
         const xSuccess = x + entity.size.width <= this.xMin || x - entity.size.width >= this.xMax;
         const ySuccess = y + entity.size.height <= this.yMin || y - entity.size.height >= this.yMax;
-        const zSuccess = z + entity.size.depth <= this.zMin || z - entity.size.depth >= this.zMax;
+        const zSuccess = this.onlyXY || (z + entity.size.depth <= this.zMin || z - entity.size.depth >= this.zMax);
         return {
             x: xSuccess,
             y: ySuccess,

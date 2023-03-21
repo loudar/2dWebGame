@@ -39,4 +39,8 @@ export class EntityHook extends Hook {
     setOnStateChange(onStateChange) {
         this.onStateChange = onStateChange;
     }
+
+    setOnCollide(onCollide) {
+        this.onCollide = onCollide;
+    }
 }
