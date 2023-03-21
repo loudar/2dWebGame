@@ -60,4 +60,10 @@ export class EntityLayer extends Layer {
             }
         });
     }
+
+    addEntities() {
+        for (let entity of arguments) {
+            this.addEntity(entity);
+        }
+    }
 }

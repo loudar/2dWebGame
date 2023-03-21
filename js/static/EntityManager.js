@@ -14,10 +14,16 @@ export class EntityManager {
         for (const entityLayer of entityLayers) {
             const player = entityLayer.getEntities().find(entity => entity.isPlayer);
             if (player) {
-                return {
+                const direction = {
                     x: player.position.x - enemyEntity.position.x,
                     y: player.position.y - enemyEntity.position.y,
                     z: player.position.z - enemyEntity.position.z
+                };
+                const normalizeFactor = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+                return {
+                    x: direction.x / normalizeFactor,
+                    y: direction.y / normalizeFactor,
+                    z: direction.z / normalizeFactor
                 };
             }
         }

@@ -19,6 +19,7 @@ import {UiLayerElements} from "./JensElements/LayerContentElements/UiLayerElemen
 import {UUID} from "./Helpers/UUID.js";
 import {PositionConstraint} from "./Models/Constraints/PositionConstraint.js";
 import {GameManager} from "./static/GameManager.js";
+import {EnemyEntity} from "./Models/LayerContent/Entity/EnemyEntity.js";
 
 GameManager.create();
 const gameOptions = DataManager.getKey(DataEntries.GAME_OPTIONS);
@@ -33,11 +34,11 @@ image.setFixedSize(AspectRatioHelper.getWidthFromHeightOrWidthAsMin(window.inner
 const imageLayer = new ImageLayer("testImage", image);
 
 const entityLayer = new EntityLayer("testEntity");
-
+const enemyEntity = new EnemyEntity("enemy", new CharacterTexture("#f0f"), new Size3D(5, 5), new Coordinates3D(200, 200));
+enemyEntity.setSpeed(.5);
 const blockEntity2 = new BlockEntity("test", new Texture("#fff"), new Size3D(100, 100), new Coordinates3D(100, 100), new Rotation(0));
-entityLayer.addEntity(blockEntity2);
 
-const characterEntity = new CharacterEntity("test", new CharacterTexture(), new Size3D(2, 2));
+const characterEntity = new CharacterEntity("test", new CharacterTexture(), new Size3D(5, 5));
 characterEntity.setAsPlayer();
 const xConstraint = gameOptions.gridSize / 2;
 const yConstraint = (gameOptions.gridSize / 2) / aspectRatio;
@@ -57,11 +58,10 @@ const floorConstraint = new PositionConstraint(
     Math.floor(-yConstraint * floorFactor.y),
     Math.floor(yConstraint * floorFactor.y)
 ).ignoreZ();
-characterEntity.addConstraint(floorConstraint);
-characterEntity.addConstraint(wallConstraint);
 const boxConstraint = blockEntity2.getConstraint().ignoreZ();
-characterEntity.addConstraint(boxConstraint);
-entityLayer.addEntity(characterEntity);
+characterEntity.addConstraints(floorConstraint, boxConstraint);
+enemyEntity.addConstraints(floorConstraint, boxConstraint);
+entityLayer.addEntities(enemyEntity, blockEntity2, characterEntity);
 
 const uiLayer = new UiLayer("testUi");
 const textId = UUID.new.generate();

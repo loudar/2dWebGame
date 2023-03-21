@@ -7,7 +7,7 @@ import {EntityHook} from "../Ui/EntityHook.js";
 import {Size3D} from "../../Size3D.js";
 
 export class Entity {
-    constructor(name, size = new Size3D(), position = new Coordinates3D(), rotation = new Rotation(), scale = 1, state = {}) {
+    constructor(name, size = new Size3D(), position = new Coordinates3D(), rotation = new Rotation(), scale = 1, state = {speed: 1}) {
         TypeValidator.validateType(name, String);
         TypeValidator.validateType(size, Size3D);
         TypeValidator.validateType(position, Coordinates3D);
@@ -49,10 +49,14 @@ export class Entity {
         node.style.height = windowScale.y * windowScale.ar * this.size.height + "px";
     }
 
+    setSpeed(speed) {
+        this.state.speed = speed;
+    }
+
     updatePosition() {
-        const newX = this.position.x + this.position.dX;
-        const newY = this.position.y + this.position.dY;
-        const newZ = this.position.z + this.position.dZ;
+        const newX = this.position.x + this.position.dX * this.state.speed;
+        const newY = this.position.y + this.position.dY * this.state.speed;
+        const newZ = this.position.z + this.position.dZ * this.state.speed;
         this.position.setX(newX);
         this.position.setY(newY);
         this.position.setZ(newZ);
@@ -87,5 +91,11 @@ export class Entity {
 
     addConstraint(constraint) {
         this.constraints.push(constraint);
+    }
+
+    addConstraints() {
+        for (let constraint of arguments) {
+            this.addConstraint(constraint);
+        }
     }
 }

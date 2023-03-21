@@ -1,17 +1,15 @@
 import {Entity} from "./Entity.js";
-import {CharacterTexture} from "../../CharacterTexture";
-import {TypeValidator} from "../../../Meta/TypeValidator";
-import {CharacterKeys} from "../../Keys/CharacterKeys";
-import {ElementFactory} from "../../../static/ElementFactory";
-import {EntityLayerElements} from "../../../JensElements/LayerContentElements/EntityLayerElements";
+import {CharacterTexture} from "../../CharacterTexture.js";
+import {TypeValidator} from "../../../Meta/TypeValidator.js";
+import {ElementFactory} from "../../../static/ElementFactory.js";
+import {EntityLayerElements} from "../../../JensElements/LayerContentElements/EntityLayerElements.js";
 import {EntityManager} from "../../../static/EntityManager.js";
 
 export class EnemyEntity extends Entity {
-    constructor(name, texture = new CharacterTexture(), size, position, rotation, scale, state) {
+    constructor(name, texture = new CharacterTexture("#f0f"), size, position, rotation, scale, state) {
         super(name, size, position, rotation, scale, state);
         TypeValidator.validateType(texture, CharacterTexture);
         this.texture = texture;
-        this.keys = new CharacterKeys();
     }
 
     render() {

@@ -2,8 +2,11 @@ import {Texture} from "./Texture.js";
 import {TypeValidator} from "../Meta/TypeValidator.js";
 
 export class CharacterTexture extends Texture {
-    constructor(idleTextures = [], movingTextures = [], jumpingTextures = [], fallingTextures = [], deadTextures = [], color = "#0ff", image = null, borderColor = "transparent") {
+    constructor(color = "#0ff", image = null, borderColor = "transparent") {
         super(color, image, borderColor);
+    }
+
+    addAssets(idleTextures = [], movingTextures = [], jumpingTextures = [], fallingTextures = [], deadTextures = []) {
         TypeValidator.validateType(idleTextures, Array);
         TypeValidator.validateType(movingTextures, Array);
         TypeValidator.validateType(jumpingTextures, Array);
