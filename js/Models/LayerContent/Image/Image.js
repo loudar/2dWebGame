@@ -10,7 +10,9 @@ export class Image {
         if (!validFiletypes.includes(this.filetype)) {
             console.warn(`Unknown filetype: ${this.filetype}`);
         }
-        this.style = {};
+        this.style = {
+            backgroundColor: "#f00"
+        };
     }
 
     setFixedSize(width, height, resizeHandler = null) {

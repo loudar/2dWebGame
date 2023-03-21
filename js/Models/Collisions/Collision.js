@@ -29,11 +29,11 @@ export class Collision {
         }
         const minDist = Math.min(xDist, yDist, zDist);
         if (minDist === xDist) {
-            return { border: "x", distance: xDist + (entity.size.width / 2) };
+            return { border: "x", distance: xDist + 0.1 };
         } else if (minDist === yDist) {
-            return { border: "y", distance: yDist + (entity.size.height / 2) };
+            return { border: "y", distance: yDist + 0.1 };
         } else if (minDist === zDist) {
-            return { border: "z", distance: zDist + (entity.size.depth / 2) };
+            return { border: "z", distance: zDist + 0.1 };
         } else {
             return { border: "none", distance: 0 };
         }
