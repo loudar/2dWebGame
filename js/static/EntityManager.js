@@ -8,4 +8,20 @@ export class EntityManager {
             layer.update();
         }
     }
+
+    static getDirectionToPlayer(enemyEntity) {
+        const entityLayers = LayerManager.getLayersByType(LayerTypes.entity);
+        for (const entityLayer of entityLayers) {
+            const player = entityLayer.getEntities().find(entity => entity.isPlayer);
+            if (player) {
+                return {
+                    x: player.position.x - enemyEntity.position.x,
+                    y: player.position.y - enemyEntity.position.y,
+                    z: player.position.z - enemyEntity.position.z
+                };
+            }
+        }
+        console.warn("No player found.");
+        return {x: 0, y: 0, z: 0};
+    }
 }

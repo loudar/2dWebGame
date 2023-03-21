@@ -41,15 +41,25 @@ const characterEntity = new CharacterEntity("test", new CharacterTexture(), new 
 characterEntity.setAsPlayer();
 const xConstraint = gameOptions.gridSize / 2;
 const yConstraint = (gameOptions.gridSize / 2) / aspectRatio;
-const wallConstraint = new PositionConstraint(-xConstraint, xConstraint, -yConstraint, yConstraint);
+const wallConstraint = new PositionConstraint(
+    Math.floor(-xConstraint),
+    Math.floor(xConstraint),
+    Math.floor(-yConstraint),
+    Math.floor(yConstraint)
+).ignoreZ();
 const floorFactor = {
     x: 0.775,
     y: 0.65
 };
-const floorConstraint = new PositionConstraint(-xConstraint * floorFactor.x, xConstraint * floorFactor.x, -yConstraint * floorFactor.y, yConstraint * floorFactor.y);
+const floorConstraint = new PositionConstraint(
+    Math.floor(-xConstraint * floorFactor.x),
+    Math.floor(xConstraint * floorFactor.x),
+    Math.floor(-yConstraint * floorFactor.y),
+    Math.floor(yConstraint * floorFactor.y)
+).ignoreZ();
 characterEntity.addConstraint(floorConstraint);
 characterEntity.addConstraint(wallConstraint);
-const boxConstraint = blockEntity2.getConstraint();
+const boxConstraint = blockEntity2.getConstraint().ignoreZ();
 characterEntity.addConstraint(boxConstraint);
 entityLayer.addEntity(characterEntity);
 

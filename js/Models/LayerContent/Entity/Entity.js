@@ -45,6 +45,8 @@ export class Entity {
         const x = this.position.x * windowScale.x;
         const y = this.position.y * windowScale.y * windowScale.ar;
         node.style.transform = `translate(${x}px, ${y}px) scale(${this.scale}) rotate(${this.rotation.zDegrees}deg) translate(-50%, -50%)`;
+        node.style.width = windowScale.x * this.size.width + "px";
+        node.style.height = windowScale.y * windowScale.ar * this.size.height + "px";
     }
 
     updatePosition() {
@@ -56,13 +58,26 @@ export class Entity {
         this.position.setZ(newZ);
         if (this.constraints.length > 0) {
             for (const constraint of this.constraints) {
-                const success = constraint.success(this);
-                if (!success.x) {
-                    this.position.setX(newX - this.position.dX);
-                }
-                if (!success.y) {
-                    this.position.setY(newY - this.position.dY);
-                }
+                let success;
+                do {
+                    success = constraint.success(this);
+                    switch (success.closestBordersDistance.border) {
+                        case "x":
+                            if (!success.x && !success.all) {
+                                this.position.setX(this.position.x - (success.closestBordersDistance.distance * Math.sign(this.position.dX)));
+                            }
+                            break;
+                        case "y":
+                            if (!success.y && !success.all) {
+                                this.position.setY(this.position.y - (success.closestBordersDistance.distance * Math.sign(this.position.dY)));
+                            }
+                            break;
+                        case "z":
+                            if (!success.z && !success.all) {
+                                this.position.setZ(this.position.z - (success.closestBordersDistance.distance * Math.sign(this.position.dZ)));
+                            }
+                    }
+                } while (!success.all);
             }
         }
         if ((this.position.dX !== 0 || this.position.dY !== 0 || this.position.dX !== 0) && this.hook.onMove) {

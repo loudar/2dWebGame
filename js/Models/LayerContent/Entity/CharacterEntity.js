@@ -3,7 +3,6 @@ import {CharacterTexture} from "../../CharacterTexture.js";
 import {TypeValidator} from "../../../Meta/TypeValidator.js";
 import {ElementFactory} from "../../../static/ElementFactory.js";
 import {EntityLayerElements} from "../../../JensElements/LayerContentElements/EntityLayerElements.js";
-import {AspectRatioHelper} from "../../../Helpers/AspectRatioHelper.js";
 import {CharacterOptions} from "../../Options/CharacterOptions.js";
 import {CharacterKeys} from "../../Keys/CharacterKeys.js";
 
@@ -31,9 +30,6 @@ export class CharacterEntity extends Entity {
         this.changed = false;
         this.updatePositionByKeys();
         super.update(node);
-        const windowScale = AspectRatioHelper.getWindowScale();
-        node.style.width = windowScale.x * this.size.width + "px";
-        node.style.height = windowScale.y * windowScale.ar * this.size.height + "px";
         node.style.backgroundColor = this.texture.color;
         node.style.backgroundImage = this.texture.image ? `url(${this.texture.image})` : "none";
         node.style.borderColor = this.texture.borderColor;
@@ -45,6 +41,7 @@ export class CharacterEntity extends Entity {
      */
     setAsPlayer(characterOptions = new CharacterOptions()) {
         this.options = characterOptions;
+        this.isPlayer = true;
         window.addEventListener("keydown", this.keydownHandler.bind(this));
         window.addEventListener("keyup", this.keyupHandler.bind(this));
     }
@@ -95,6 +92,7 @@ export class CharacterEntity extends Entity {
     }
 
     removeAsPlayer() {
+        this.isPlayer = false;
         window.removeEventListener("keydown", this.keydownHandler.bind(this));
         window.removeEventListener("keyup", this.keyupHandler.bind(this));
     }
