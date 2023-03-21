@@ -98,22 +98,7 @@ export class Entity {
                     runs++;
                     success = collision.success(this);
                     if (!collision.nonPhysical) {
-                        switch (success.closestBordersDistance.border) {
-                            case "x":
-                                if (!success.x && !success.all) {
-                                    this.position.setX(this.position.x - (success.closestBordersDistance.distance * Math.sign(this.position.dX)));
-                                }
-                                break;
-                            case "y":
-                                if (!success.y && !success.all) {
-                                    this.position.setY(this.position.y - (success.closestBordersDistance.distance * Math.sign(this.position.dY)));
-                                }
-                                break;
-                            case "z":
-                                if (!success.z && !success.all) {
-                                    this.position.setZ(this.position.z - (success.closestBordersDistance.distance * Math.sign(this.position.dZ)));
-                                }
-                        }
+                        this.tryToReverseMovement(success);
                     }
                     if (!success.all && collision.entity !== this && this.hook.onCollide) {
                         this.hook.onCollide(this, collision.entity, collision, success);
@@ -130,6 +115,25 @@ export class Entity {
         if ((this.position.dX !== 0 || this.position.dY !== 0 || this.position.dX !== 0) && this.hook.onMove) {
             this.hook.onMove(this);
             this.updateCollisionsForOtherEntities();
+        }
+    }
+
+    tryToReverseMovement(success) {
+        switch (success.closestBordersDistance.border) {
+            case "x":
+                if (!success.x && !success.all) {
+                    this.position.setX(this.position.x - (success.closestBordersDistance.distance * Math.sign(this.position.dX)));
+                }
+                break;
+            case "y":
+                if (!success.y && !success.all) {
+                    this.position.setY(this.position.y - (success.closestBordersDistance.distance * Math.sign(this.position.dY)));
+                }
+                break;
+            case "z":
+                if (!success.z && !success.all) {
+                    this.position.setZ(this.position.z - (success.closestBordersDistance.distance * Math.sign(this.position.dZ)));
+                }
         }
     }
 
