@@ -3,8 +3,9 @@ import {CharacterTexture} from "../../Properties/Textures/CharacterTexture.js";
 import {TypeValidator} from "../../../Meta/TypeValidator.js";
 import {ElementFactory} from "../../../static/ElementFactory.js";
 import {EntityLayerElements} from "../../../JensElements/LayerContentElements/EntityLayerElements.js";
-import {EntityManager} from "../../../static/EntityManager.js";
 import {EntityTypes} from "../../../Enums/EntityTypes.js";
+import {LayerManager} from "../../../static/LayerManager.js";
+import {LayerTypes} from "../../../Enums/LayerTypes.js";
 
 export class EnemyEntity extends Entity {
     constructor(name, texture = new CharacterTexture("#f0f"), size, position, rotation, scale, state) {
@@ -27,11 +28,33 @@ export class EnemyEntity extends Entity {
 
     update(node) {
         this.changed = false;
-        this.setDirection(EntityManager.getDirectionToPlayer(this));
+        this.setDirection(this.getDirectionToPlayer());
         super.update(node);
         node.style.backgroundColor = this.texture.color;
         node.style.backgroundImage = this.texture.image ? `url(${this.texture.image})` : "none";
         node.style.borderColor = this.texture.borderColor;
+    }
+
+    getDirectionToPlayer() {
+        const entityLayers = LayerManager.getLayersByType(LayerTypes.entity);
+        for (const entityLayer of entityLayers) {
+            const player = entityLayer.getEntities().find(entity => entity.isPlayer);
+            if (player) {
+                const direction = {
+                    x: player.position.x - this.position.x,
+                    y: player.position.y - this.position.y,
+                    z: player.position.z - this.position.z
+                };
+                const normalizeFactor = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+                return {
+                    x: direction.x / normalizeFactor,
+                    y: direction.y / normalizeFactor,
+                    z: direction.z / normalizeFactor
+                };
+            }
+        }
+        console.warn("No player entity found. Set one with entity.setAsPlayer() to enable enemy movement towards player and control it.");
+        return {x: 0, y: 0, z: 0};
     }
 
     setDirection(direction) {
