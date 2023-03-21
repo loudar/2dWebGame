@@ -1,5 +1,5 @@
 # How to run
-Open `index.html` in your favorite browser.
+Start a web server with your preferred tool (e.g. VS Code, WebStorm or whatever). Browse to the `index.html`.
 
 # How to develop a game
 **You only have to modify `app.js`.** You can include custom classes as well.
