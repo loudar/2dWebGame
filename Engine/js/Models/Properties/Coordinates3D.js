@@ -17,26 +17,32 @@ export class Coordinates3D {
     }
 
     setX(x) {
+        TypeValidator.validateType(x, Number);
         this.x = x;
     }
 
     setY(y) {
+        TypeValidator.validateType(y, Number);
         this.y = y;
     }
 
     setZ(z) {
+        TypeValidator.validateType(z, Number);
         this.z = z;
     }
 
     setDX(dX) {
+        TypeValidator.validateType(dX, Number);
         this.dX = dX;
     }
 
     setDY(dY) {
+        TypeValidator.validateType(dY, Number);
         this.dY = dY;
     }
 
     setDZ(dZ) {
+        TypeValidator.validateType(dZ, Number);
         this.dZ = dZ;
     }
 }

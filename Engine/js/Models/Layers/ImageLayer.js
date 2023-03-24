@@ -12,6 +12,10 @@ export class ImageLayer extends Layer {
         this.image = image;
     }
 
+    setBackgroundColor(color) {
+        this.image.style.backgroundColor = color;
+    }
+
     getImage() {
         return this.image;
     }

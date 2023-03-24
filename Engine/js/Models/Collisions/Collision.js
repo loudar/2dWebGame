@@ -1,3 +1,5 @@
+import {Coordinates3D} from "../Properties/Coordinates3D.js";
+
 export class Collision {
     constructor() {
         this.entity = null;
@@ -46,5 +48,61 @@ export class Collision {
     isNonPhysical() {
         this.nonPhysical = true;
         return this;
+    }
+
+    getCoordinatesForCorner(corner) {
+        switch (corner) {
+            case "topLeftFront":
+                return new Coordinates3D(this.xMin, this.yMax, this.zMax);
+            case "topLeftBack":
+                return new Coordinates3D(this.xMin, this.yMax, this.zMin);
+            case "topRightFront":
+                return new Coordinates3D(this.xMax, this.yMax, this.zMax);
+            case "topRightBack":
+                return new Coordinates3D(this.xMax, this.yMax, this.zMin);
+            case "bottomLeftFront":
+                return new Coordinates3D(this.xMin, this.yMin, this.zMax);
+            case "bottomLeftBack":
+                return new Coordinates3D(this.xMin, this.yMin, this.zMin);
+            case "bottomRightFront":
+                return new Coordinates3D(this.xMax, this.yMin, this.zMax);
+            case "bottomRightBack":
+                return new Coordinates3D(this.xMax, this.yMin, this.zMin);
+        }
+    }
+
+    getCoordinatesForCorner2D(corner) {
+        switch (corner) {
+            case "topLeft":
+                return new Coordinates3D(this.xMin, this.yMax, 0);
+            case "topRight":
+                return new Coordinates3D(this.xMax, this.yMax, 0);
+            case "bottomLeft":
+                return new Coordinates3D(this.xMin, this.yMin, 0);
+            case "bottomRight":
+                return new Coordinates3D(this.xMax, this.yMin, 0);
+        }
+    }
+
+    getCornerCoordinates() {
+        return {
+            topLeftFront: this.getCoordinatesForCorner("topLeftFront"),
+            topLeftBack: this.getCoordinatesForCorner("topLeftBack"),
+            topRightFront: this.getCoordinatesForCorner("topRightFront"),
+            topRightBack: this.getCoordinatesForCorner("topRightBack"),
+            bottomLeftFront: this.getCoordinatesForCorner("bottomLeftFront"),
+            bottomLeftBack: this.getCoordinatesForCorner("bottomLeftBack"),
+            bottomRightFront: this.getCoordinatesForCorner("bottomRightFront"),
+            bottomRightBack: this.getCoordinatesForCorner("bottomRightBack"),
+        }
+    }
+
+    getCornerCoordinates2D() {
+        return {
+            topLeft: this.getCoordinatesForCorner2D("topLeft"),
+            topRight: this.getCoordinatesForCorner2D("topRight"),
+            bottomLeft: this.getCoordinatesForCorner2D("bottomLeft"),
+            bottomRight: this.getCoordinatesForCorner2D("bottomRight"),
+        }
     }
 }

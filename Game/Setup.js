@@ -50,10 +50,10 @@ export class Setup {
     }
 
     static async setupBackground() {
-        const imgSource = "assets/images/Stage_Basement_room.webp";
+        const imgSource = "assets/images/simpleBg.png";
         const image = new Image(imgSource);
         const aspectRatio = await AspectRatioHelper.getAspectRatioFromImageSource(imgSource);
-        DataManager.addOrUpdateKey(DataEntries.ASPECT_RATIO, aspectRatio);
+        DataManager.addOrUpdateKey(DataEntries.ASPECT_RATIO, Math.round(aspectRatio * 100) / 100);
         image.setFixedSize(AspectRatioHelper.getWidthFromHeightOrWidthAsMin(window.innerWidth, window.innerHeight, aspectRatio), AspectRatioHelper.getHeightFromWidthOrHeightAsMin(window.innerWidth, window.innerHeight, aspectRatio), e => {
             image.setFixedSize(AspectRatioHelper.getWidthFromHeightOrWidthAsMin(window.innerWidth, window.innerHeight, aspectRatio), AspectRatioHelper.getHeightFromWidthOrHeightAsMin(window.innerWidth, window.innerHeight, aspectRatio));
         });

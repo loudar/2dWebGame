@@ -92,9 +92,9 @@ export class Entity {
         const newX = this.position.x + this.position.dX * this.state.speed;
         const newY = this.position.y + this.position.dY * this.state.speed;
         const newZ = this.position.z + this.position.dZ * this.state.speed;
-        this.position.setX(newX);
-        this.position.setY(newY);
-        this.position.setZ(newZ);
+        this.position.setX(Math.round(newX * 100) / 100);
+        this.position.setY(Math.round(newY * 100) / 100);
+        this.position.setZ(Math.round(newZ * 100) / 100);
         if (this.collisions.length > 0) {
             this.checkCollisions();
         }
