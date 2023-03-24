@@ -88,29 +88,7 @@ export class Entity {
         this.position.setY(newY);
         this.position.setZ(newZ);
         if (this.collisions.length > 0) {
-            this.sortCollisions();
-            for (let collision of this.collisions) {
-                if (collision.entity !== null) {
-                    collision = collision.entity.getCollision(collision);
-                }
-                let success, runs = 0;
-                do {
-                    runs++;
-                    success = collision.success(this);
-                    if (!collision.nonPhysical) {
-                        this.tryToReverseMovement(success);
-                    }
-                    if (!success.all && collision.entity !== this && this.hook.onCollide) {
-                        this.hook.onCollide(this, collision.entity, collision, success);
-                    }
-                    if (runs > 10) {
-                        this.position.dX = 0;
-                        this.position.dY = 0;
-                        this.position.dZ = 0;
-                        break;
-                    }
-                } while (!success.all && !collision.nonPhysical);
-            }
+            this.checkCollisions();
         }
         if ((this.position.dX !== 0 || this.position.dY !== 0 || this.position.dX !== 0) && this.hook.onMove) {
             this.hook.onMove(this);
@@ -118,6 +96,46 @@ export class Entity {
         }
     }
 
+    /**
+     * Checks if the entity collides with other entities and calls the onCollide hook if defined.
+     */
+    checkCollisions() {
+        this.sortCollisions();
+        for (let collision of this.collisions) {
+            if (collision.entity !== null) {
+                collision = collision.entity.getCollision(collision);
+            }
+            let success, runs = 0;
+            do {
+                runs++;
+                success = collision.success(this);
+                if (!collision.nonPhysical) {
+                    this.tryToReverseMovement(success);
+                }
+                if (!success.all && collision.entity !== this && this.hook.onCollide) {
+                    this.hook.onCollide(this, collision.entity, collision, success);
+                }
+                if (runs > 10) {
+                    this.position.dX = 0;
+                    this.position.dY = 0;
+                    this.position.dZ = 0;
+                    break;
+                }
+            } while (!success.all && !collision.nonPhysical);
+        }
+    }
+
+    /**
+     * Tries to reverse the movement of the entity by the distance to the closest border of the colliding entity.
+     * @param success {Object} The success object of the collision.
+     * @param success.closestBordersDistance {Object} The closest borders distance object.
+     * @param success.closestBordersDistance.border {String} The border that is closest to the entity.
+     * @param success.closestBordersDistance.distance {Number} The distance to the closest border.
+     * @param success.x {Boolean} Whether the x border is colliding.
+     * @param success.y {Boolean} Whether the y border is colliding.
+     * @param success.z {Boolean} Whether the z border is colliding.
+     * @param success.all {Boolean} Whether the collision counts as hit.
+     */
     tryToReverseMovement(success) {
         switch (success.closestBordersDistance.border) {
             case "x":

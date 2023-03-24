@@ -67,7 +67,7 @@ characterEntity.hook.setOnCollide((character, collidingEntity, collision, collis
         return;
     }
     if (collidingEntity.type === EntityTypes.enemy) {
-        //entityLayer.removeEntity(collidingEntity);
+        entityLayer.removeEntity(collidingEntity);
     }
 });
 const characterCollision = characterEntity.getCollision().ignoreZ().isNonPhysical();
