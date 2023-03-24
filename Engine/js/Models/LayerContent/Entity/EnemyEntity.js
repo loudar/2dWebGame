@@ -12,6 +12,7 @@ export class EnemyEntity extends Entity {
         super(EntityTypes.enemy, name, size, position, rotation, scale, state);
         TypeValidator.validateType(texture, CharacterTexture);
         this.texture = texture;
+        this.target = null;
     }
 
     render() {
@@ -36,25 +37,46 @@ export class EnemyEntity extends Entity {
     }
 
     getDirectionToPlayer() {
-        const entityLayers = LayerManager.getLayersByType(LayerTypes.entity);
-        for (const entityLayer of entityLayers) {
-            const player = entityLayer.getEntities().find(entity => entity.isPlayer);
-            if (player) {
-                const direction = {
-                    x: player.position.x - this.position.x,
-                    y: player.position.y - this.position.y,
-                    z: player.position.z - this.position.z
-                };
-                const normalizeFactor = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
-                return {
-                    x: direction.x / normalizeFactor,
-                    y: direction.y / normalizeFactor,
-                    z: direction.z / normalizeFactor
-                };
-            }
+        if (this.target) {
+            const directionToTarget = this.getLinearDirectionToTarget(this.target.position, this.position);
+            return this.avoidCollisions(directionToTarget);
         }
         console.warn("No player entity found. Set one with entity.setAsPlayer() to enable enemy movement towards player and control it.");
         return {x: 0, y: 0, z: 0};
+    }
+
+    avoidCollisions(directionToTarget) {
+        const avoidanceForce = .75;
+        for (let collision of this.collisions) {
+            if (!collision.entity) {
+                continue;
+            }
+            if (collision.entity.type === EntityTypes.block) {
+                const collisionDirection = this.getLinearDirectionToTarget(collision.entity.position, this.position);
+                directionToTarget.x -= collisionDirection.x * avoidanceForce;
+                directionToTarget.y -= collisionDirection.y * avoidanceForce;
+                directionToTarget.z -= collisionDirection.z * avoidanceForce;
+            }
+        }
+        return this.normalizeDirection(directionToTarget);
+    }
+
+    getLinearDirectionToTarget(target, position) {
+        const direction = {
+            x: target.x - position.x,
+            y: target.y - position.y,
+            z: target.z - position.z
+        };
+        return this.normalizeDirection(direction);
+    }
+
+    normalizeDirection(direction) {
+        const normalizeFactor = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+        return {
+            x: direction.x / normalizeFactor,
+            y: direction.y / normalizeFactor,
+            z: direction.z / normalizeFactor
+        };
     }
 
     setDirection(direction) {
@@ -64,5 +86,9 @@ export class EnemyEntity extends Entity {
         if (this.position.dX !== 0 || this.position.dY !== 0 || this.position.dZ !== 0) {
             this.changed = true;
         }
+    }
+
+    setTarget(target) {
+        this.target = target;
     }
 }

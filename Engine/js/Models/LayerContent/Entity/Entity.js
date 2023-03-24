@@ -28,6 +28,15 @@ export class Entity {
         this.changed = false;
         this.hook = new EntityHook(this.id);
         this.collisions = [];
+        this.updateOnTicks = false;
+    }
+
+    enableUpdateOnTicks() {
+        this.updateOnTicks = true;
+    }
+
+    disableUpdateOnTicks() {
+        this.updateOnTicks = false;
     }
 
     getCollision(oldCollision = null) {
@@ -98,8 +107,13 @@ export class Entity {
     /**
      * Checks if the entity collides with other entities and calls the onCollide hook if defined.
      */
-    checkCollisions() {
+    checkCollisions(checkedEntities = []) {
+        if (checkedEntities.includes(this)) {
+            return;
+        }
         this.sortCollisions();
+        let collided = false;
+        checkedEntities.push(this);
         for (let collision of this.collisions) {
             if (collision.entity !== null) {
                 collision = collision.entity.getCollision(collision);
@@ -111,6 +125,9 @@ export class Entity {
                 if (!collision.nonPhysical) {
                     this.tryToReverseMovement(success);
                 }
+                if (!success.all && collision.entity !== this && collision.entity !== null && !checkedEntities.includes(collision.entity)) {
+                    collision.entity.checkCollisions(checkedEntities);
+                }
                 if (!success.all && collision.entity !== this && this.hook.onCollide) {
                     this.hook.onCollide(this, collision.entity, collision, success);
                 }
@@ -121,6 +138,14 @@ export class Entity {
                     break;
                 }
             } while (!success.all && !collision.nonPhysical);
+            if (!success.all) {
+                collided = true;
+            }
+        }
+        if (collided) {
+            setTimeout(() => {
+                this.checkCollisions(checkedEntities);
+            }, 100);
         }
     }
 

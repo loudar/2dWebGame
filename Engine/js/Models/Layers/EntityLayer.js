@@ -57,7 +57,7 @@ export class EntityLayer extends Layer {
 
     update() {
         this.entities.forEach(entity => {
-            if (!entity.changed) {
+            if (!entity.changed && !entity.updateOnTicks) {
                 return;
             }
             const entityNode = document.getElementById(entity.id);

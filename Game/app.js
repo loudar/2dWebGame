@@ -22,8 +22,10 @@ import {GameManager} from "../Engine/js/static/GameManager.js";
 import {EnemyEntity} from "../Engine/js/Models/LayerContent/Entity/EnemyEntity.js";
 import {EntityTypes} from "../Engine/js/Enums/EntityTypes.js";
 import {PlayerState} from "./Models/States/PlayerState.js";
+import {StyleManager} from "../Engine/js/static/StyleManager.js";
 
 GameManager.create();
+StyleManager.registerCustomStylesheet("globalOverride", "Game/Styles/global.css");
 const gameOptions = DataManager.getKey(DataEntries.GAME_OPTIONS);
 
 const imgSource = "assets/images/Stage_Basement_room.webp";
@@ -42,6 +44,7 @@ const blockEntity2 = new BlockEntity("test", new Texture("#fff"), new Size3D(100
 
 const characterEntity = new CharacterEntity("test", new CharacterTexture(), new Size3D(10, 10), new Coordinates3D(0, 0), new Rotation(0), 1, new PlayerState());
 characterEntity.setAsPlayer();
+enemyEntity.setTarget(characterEntity);
 const xCollision = gameOptions.gridSize / 2;
 const yCollision = (gameOptions.gridSize / 2) / aspectRatio;
 const wallCollision = new PositionCollision(
@@ -63,6 +66,8 @@ const floorCollision = new PositionCollision(
 const boxCollision = blockEntity2.getCollision().ignoreZ().lowPriority();
 const enemyCollision = enemyEntity.getCollision().ignoreZ().isNonPhysical();
 characterEntity.addCollisions(enemyCollision, floorCollision, boxCollision);
+const uiLayer = new UiLayer("testUi", true);
+const textId = UUID.new.generate();
 characterEntity.hook.setOnCollide((c, collidingEntity, collision, collisionSuccess) => {
     if (!collidingEntity) {
         return;
@@ -79,11 +84,18 @@ const characterCollision = characterEntity.getCollision().ignoreZ().isNonPhysica
 enemyEntity.addCollisions(floorCollision, boxCollision, characterCollision);
 entityLayer.addEntities(enemyEntity, blockEntity2, characterEntity);
 
-const uiLayer = new UiLayer("testUi");
-const textId = UUID.new.generate();
+const textId2 = UUID.new.generate();
 uiLayer.addTemplate(textId, UiLayerElements.text, {
     id: textId, text: 'health: 100/100'
+}, new Coordinates3D(0, -(gameOptions.gridSize / 3)));
+uiLayer.addTemplate(textId2, UiLayerElements.text, {
+    id: textId2, text: 'position: 0, 0'
 });
+characterEntity.hook.setOnMove(c => {
+    uiLayer.updateElement(textId2, {
+        text: `position: ${c.position.x}, ${c.position.y}`
+    });
+})
 
 LayerManager.addLayers(imageLayer, entityLayer, uiLayer);
 UpdateManager.updateLayerList();

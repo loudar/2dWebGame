@@ -29,4 +29,18 @@ export class StyleManager {
             }
         });
     }
+
+    static registerCustomStylesheet(name, stylesheet) {
+        const res = fetch(stylesheet);
+        res.then((response) => {
+            if (response.ok) {
+                response.text().then((text) => {
+                    const style = document.createElement("style");
+                    style.id = name;
+                    style.innerHTML = text;
+                    document.head.appendChild(style);
+                });
+            }
+        });
+    }
 }

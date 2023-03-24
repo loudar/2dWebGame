@@ -4,6 +4,7 @@ export class PlayerState {
         this.health = health;
         this.baseSpeed = baseSpeed;
         this.speed = speed;
+        this.damageLock = null;
     }
 
     getHealth() {
@@ -18,7 +19,7 @@ export class PlayerState {
             health = this.baseHealth;
         }
         if (health < this.health) {
-            if (this.damageLock && Date.now() - this.damageLock < 1000) {
+            if (this.damageLock !== null) {
                 return;
             }
         }
@@ -26,6 +27,9 @@ export class PlayerState {
     }
 
     setDamageLock() {
+        if (this.damageLock !== null) {
+            return;
+        }
         this.damageLock = Date.now();
         setTimeout(() => {
             this.damageLock = null;
