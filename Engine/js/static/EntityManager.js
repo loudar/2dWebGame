@@ -8,4 +8,13 @@ export class EntityManager {
             layer.update();
         }
     }
+
+    static getByType(type) {
+        const layers = LayerManager.getLayersByType(LayerTypes.entity);
+        const entities = [];
+        for (const layer of layers) {
+            entities.push(...layer.getEntitiesByType(type));
+        }
+        return entities;
+    }
 }

@@ -11,8 +11,9 @@ export class UiLayer extends Layer {
         this.isAlignedToGame = isAlignedToGame;
     }
 
-    addTemplate(id, template, initialData, alignedPosition = null, centered = true) {
+    addTemplate(name, id, template, initialData, alignedPosition = null, centered = true) {
         this.templates.push({
+            name: name,
             id: id,
             template: template,
             initialData: initialData,
@@ -88,5 +89,14 @@ export class UiLayer extends Layer {
         } else {
             console.warn("Template ", t, " does not have a corresponding element. (Constructor: ", t.constructor, ")");
         }
+    }
+
+    updateElementByName(templateName, data) {
+        const t = this.templates.find(t => t.name === templateName);
+        if (!t) {
+            console.warn("Template with name ", templateName, " was not added yet.");
+            return;
+        }
+        this.updateElement(t.id, data);
     }
 }

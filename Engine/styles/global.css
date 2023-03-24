@@ -16,3 +16,13 @@
     width: 100%;
     height: 100%;
 }
+
+.flex, .flex-v {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-v {
+    flex-direction: column;
+}

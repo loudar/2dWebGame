@@ -1,4 +1,8 @@
 export class DataEntries {
+    static get TEMPLATES() {
+        return "templates";
+    }
+
     static get GAME_OPTIONS() {
         return "gameOptions";
     }

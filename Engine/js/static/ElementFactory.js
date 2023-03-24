@@ -5,6 +5,7 @@ import {DataEntries} from "../Enums/DataEntries.js";
 export class ElementFactory {
     static initialize() {
         const jens = new Jens();
+        jens.addTemplates(DataManager.getKey(DataEntries.TEMPLATES));
         DataManager.addOrUpdateKey(DataEntries.ELEMENT_FACTORY, jens);
     }
 
