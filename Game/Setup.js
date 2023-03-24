@@ -30,6 +30,7 @@ import {EntityManager} from "../Engine/js/static/EntityManager.js";
 export class Setup {
     static async setup() {
         StyleManager.registerCustomStylesheet("globalOverride", "Game/Styles/global.css");
+        StyleManager.registerCustomStylesheet("globalOverride", "Game/Styles/elements.css");
         const gameOptions = DataManager.getKey(DataEntries.GAME_OPTIONS);
 
         const aspectRatio = await this.setupBackground();
@@ -125,11 +126,21 @@ export class Setup {
             }
             if (collidingEntity.type === EntityTypes.enemy) {
                 const oldHealth = c.state.getHealth();
-                characterEntity.state.setHealth(oldHealth - 1);
+                c.state.setHealth(oldHealth - 1);
                 if (oldHealth === c.state.getHealth()) {
                     return;
                 }
                 const uiLayer = LayerManager.getLayersByType(LayerTypes.ui)[0];
+                const damageId = UUID.new.generate();
+                uiLayer.addTemplate("damageText" + damageId, UUID.new.generate(), CustomUiLayerElements.damageText, {
+                    text: "-1"
+                }, new Coordinates3D(c.position.x, c.position.y), true);
+                uiLayer.updateElementByName("damageText" + damageId, {
+                    text: "-1"
+                }, new Coordinates3D(c.position.x, c.position.y), true);
+                setTimeout(() => {
+                    uiLayer.removeElementByName("damageText" + damageId);
+                }, 1000);
                 uiLayer.updateElementByName("healthText", {
                     text: `health: ${c.state.getHealth()}/${c.state.getBaseHealth()}`
                 });

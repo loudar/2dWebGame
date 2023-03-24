@@ -22,6 +22,17 @@ export class UiLayer extends Layer {
         });
     }
 
+    getTemplateByName(name) {
+        return this.templates.find(t => t.name === name);
+    }
+
+    removeElementByName(name) {
+        const template = this.getTemplateByName(name);
+        if (template) {
+            this.removeTemplate(template);
+        }
+    }
+
     removeTemplate(template) {
         this.templates = this.templates.filter(e => e.template !== template);
     }
@@ -78,16 +89,16 @@ export class UiLayer extends Layer {
         }
         const renderNode = UpdateManager.getBy(`[data-layer-name="${this.name}"] .layercontent`);
         const oldNode = document.getElementById(t.id);
+        data.id = t.id;
+        data.isAlignedToGame = this.isAlignedToGame;
+        const newNode = ElementFactory.create(t.template, data);
+        if (t.alignedPosition && this.isAlignedToGame) {
+            this.setAlignedPosition(newNode, t);
+        }
         if (oldNode) {
-            data.id = t.id;
-            data.isAlignedToGame = this.isAlignedToGame;
-            const newNode = ElementFactory.create(t.template, data);
-            if (t.alignedPosition && this.isAlignedToGame) {
-                this.setAlignedPosition(newNode, t);
-            }
             renderNode.replaceChild(newNode, oldNode);
         } else {
-            console.warn("Template ", t, " does not have a corresponding element. (Constructor: ", t.constructor, ")");
+            renderNode.appendChild(newNode);
         }
     }
 
@@ -95,7 +106,7 @@ export class UiLayer extends Layer {
         const t = this.templates.find(t => t.name === templateName);
         if (!t) {
             console.warn("Template with name ", templateName, " was not added yet.");
-            return;
+            return -1;
         }
         this.updateElement(t.id, data);
     }
