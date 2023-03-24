@@ -12,11 +12,11 @@ export class StyleManager {
         if (!Object.values(LayerTypes).includes(layertype)) {
             throw new Error("Invalid layertype, must be one of: " + Object.values(LayerTypes).join(", "));
         }
-        this.registerStylesheet(layertype, "layers/" + layertype + "Layer");
+        this.registerStylesheet(layertype, "/layers/" + layertype + "Layer");
     }
 
     static registerStylesheet(name, stylesheet) {
-        stylesheet = "styles/" + stylesheet + ".css";
+        stylesheet = "Engine/styles/" + stylesheet + ".css";
         const res = fetch(stylesheet);
         res.then((response) => {
             if (response.ok) {

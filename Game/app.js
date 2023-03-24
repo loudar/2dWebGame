@@ -1,26 +1,27 @@
-import {LayerManager} from "./static/LayerManager.js";
-import {ImageLayer} from "./Models/Layers/ImageLayer.js";
-import {DataManager} from "./static/DataManager.js";
-import {DataEntries} from "./Enums/DataEntries.js";
-import {UpdateManager} from "./static/UpdateManager.js";
-import {Image} from "./Models/LayerContent/Image/Image.js";
-import {AspectRatioHelper} from "./Helpers/AspectRatioHelper.js";
-import {EntityLayer} from "./Models/Layers/EntityLayer.js";
-import {Size3D} from "./Models/Properties/Size3D.js";
-import {CharacterEntity} from "./Models/LayerContent/Entity/CharacterEntity.js";
-import {CharacterTexture} from "./Models/Properties/Textures/CharacterTexture.js";
-import {BlockEntity} from "./Models/LayerContent/Entity/BlockEntity.js";
-import {Texture} from "./Models/Properties/Textures/Texture.js";
-import {Coordinates3D} from "./Models/Properties/Coordinates3D.js";
-import {Rotation} from "./Models/Properties/Rotation.js";
-import {IntervalManager} from "./static/IntervalManager.js";
-import {UiLayer} from "./Models/Layers/UiLayer.js";
-import {UiLayerElements} from "./JensElements/LayerContentElements/UiLayerElements.js";
-import {UUID} from "./Helpers/UUID.js";
-import {PositionCollision} from "./Models/Collisions/PositionCollision.js";
-import {GameManager} from "./static/GameManager.js";
-import {EnemyEntity} from "./Models/LayerContent/Entity/EnemyEntity.js";
-import {EntityTypes} from "./Enums/EntityTypes.js";
+import {LayerManager} from "../Engine/js/static/LayerManager.js";
+import {ImageLayer} from "../Engine/js/Models/Layers/ImageLayer.js";
+import {DataManager} from "../Engine/js/static/DataManager.js";
+import {DataEntries} from "../Engine/js/Enums/DataEntries.js";
+import {UpdateManager} from "../Engine/js/static/UpdateManager.js";
+import {Image} from "../Engine/js/Models/LayerContent/Image/Image.js";
+import {AspectRatioHelper} from "../Engine/js/Helpers/AspectRatioHelper.js";
+import {EntityLayer} from "../Engine/js/Models/Layers/EntityLayer.js";
+import {Size3D} from "../Engine/js/Models/Properties/Size3D.js";
+import {CharacterEntity} from "../Engine/js/Models/LayerContent/Entity/CharacterEntity.js";
+import {CharacterTexture} from "../Engine/js/Models/Properties/Textures/CharacterTexture.js";
+import {BlockEntity} from "../Engine/js/Models/LayerContent/Entity/BlockEntity.js";
+import {Texture} from "../Engine/js/Models/Properties/Textures/Texture.js";
+import {Coordinates3D} from "../Engine/js/Models/Properties/Coordinates3D.js";
+import {Rotation} from "../Engine/js/Models/Properties/Rotation.js";
+import {IntervalManager} from "../Engine/js/static/IntervalManager.js";
+import {UiLayer} from "../Engine/js/Models/Layers/UiLayer.js";
+import {UiLayerElements} from "../Engine/js/JensElements/LayerContentElements/UiLayerElements.js";
+import {UUID} from "../Engine/js/Helpers/UUID.js";
+import {PositionCollision} from "../Engine/js/Models/Collisions/PositionCollision.js";
+import {GameManager} from "../Engine/js/static/GameManager.js";
+import {EnemyEntity} from "../Engine/js/Models/LayerContent/Entity/EnemyEntity.js";
+import {EntityTypes} from "../Engine/js/Enums/EntityTypes.js";
+import {PlayerState} from "./Models/States/PlayerState.js";
 
 GameManager.create();
 const gameOptions = DataManager.getKey(DataEntries.GAME_OPTIONS);
@@ -39,7 +40,7 @@ const enemyEntity = new EnemyEntity("enemy", new CharacterTexture("#f0f"), new S
 enemyEntity.setSpeed(.5);
 const blockEntity2 = new BlockEntity("test", new Texture("#fff"), new Size3D(100, 100), new Coordinates3D(100, 100), new Rotation(0));
 
-const characterEntity = new CharacterEntity("test", new CharacterTexture(), new Size3D(10, 10));
+const characterEntity = new CharacterEntity("test", new CharacterTexture(), new Size3D(10, 10), new Coordinates3D(0, 0), new Rotation(0), 1, new PlayerState());
 characterEntity.setAsPlayer();
 const xCollision = gameOptions.gridSize / 2;
 const yCollision = (gameOptions.gridSize / 2) / aspectRatio;
@@ -62,12 +63,16 @@ const floorCollision = new PositionCollision(
 const boxCollision = blockEntity2.getCollision().ignoreZ().lowPriority();
 const enemyCollision = enemyEntity.getCollision().ignoreZ().isNonPhysical();
 characterEntity.addCollisions(enemyCollision, floorCollision, boxCollision);
-characterEntity.hook.setOnCollide((character, collidingEntity, collision, collisionSuccess) => {
+characterEntity.hook.setOnCollide((c, collidingEntity, collision, collisionSuccess) => {
     if (!collidingEntity) {
         return;
     }
     if (collidingEntity.type === EntityTypes.enemy) {
-        entityLayer.removeEntity(collidingEntity);
+        characterEntity.state.setHealth(characterEntity.state.getHealth() - 1);
+        uiLayer.updateElement(textId, {
+            text: `health: ${c.state.getHealth()}/${c.state.getBaseHealth()}`
+        });
+        c.state.setDamageLock();
     }
 });
 const characterCollision = characterEntity.getCollision().ignoreZ().isNonPhysical();
@@ -77,12 +82,7 @@ entityLayer.addEntities(enemyEntity, blockEntity2, characterEntity);
 const uiLayer = new UiLayer("testUi");
 const textId = UUID.new.generate();
 uiLayer.addTemplate(textId, UiLayerElements.text, {
-    id: textId, text: 'test'
-});
-characterEntity.hook.setOnMove(c => {
-    uiLayer.updateElement(textId, {
-        text: `x: ${c.position.x} y: ${c.position.y}`
-    });
+    id: textId, text: 'health: 100/100'
 });
 
 LayerManager.addLayers(imageLayer, entityLayer, uiLayer);

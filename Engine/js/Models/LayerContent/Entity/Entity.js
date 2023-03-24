@@ -18,7 +18,6 @@ export class Entity {
         TypeValidator.validateType(position, Coordinates3D);
         TypeValidator.validateType(rotation, Rotation);
         TypeValidator.validateType(scale, Number);
-        TypeValidator.validateType(state, Object);
         this.id = UUID.new.generate();
         this.name = name;
         this.size = size;
