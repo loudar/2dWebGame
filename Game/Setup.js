@@ -51,7 +51,7 @@ export class Setup {
     }
 
     static async setupBackground() {
-        const imgSource = "assets/images/simpleBg.png";
+        const imgSource = "assets/images/Stage_Basement_room.webp";
         const image = new Image(imgSource);
         const aspectRatio = await AspectRatioHelper.getAspectRatioFromImageSource(imgSource);
         DataManager.addOrUpdateKey(DataEntries.ASPECT_RATIO, Math.round(aspectRatio * 100) / 100);
@@ -122,19 +122,19 @@ export class Setup {
         characterEntity.setAsPlayer();
         enemyEntity.setTarget(characterEntity);
 
-        characterEntity.hook.setOnCollide((c, collidingEntity, collision, collisionSuccess) => {
+        characterEntity.hook.setOnCollide(async (c, collidingEntity, collision, collisionSuccess) => {
             if (!collidingEntity) {
                 return;
             }
             if (collidingEntity.type === EntityTypes.enemy || collidingEntity.type === EntityTypes.bullet) {
-                PlayerFunctions.damage(c, collidingEntity);
+                await PlayerFunctions.damage(c, collidingEntity);
             }
         });
         const characterCollision = characterEntity.getCollision().ignoreZ().isNonPhysical();
         enemyEntity.addCollisions(worldCollisions.floorCollision, worldEntities.boxCollision, characterCollision);
         entityLayer.addEntities(enemyEntity, characterEntity);
 
-        characterEntity.addCollisions(worldCollisions.floorCollision, worldEntities.boxCollision);
+        characterEntity.addCollisions(worldCollisions.floorCollision, worldEntities.boxCollision, enemyCollision);
         characterEntity.hook.setOnMove(c => {
             const uiLayer = LayerManager.getLayersByType(LayerTypes.ui)[0];
             uiLayer.updateElementByName("positionText", {

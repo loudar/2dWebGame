@@ -54,11 +54,11 @@ export class EnemyEntity extends Entity {
     }
 
     getDirectionToPlayer() {
-        /*if (this.target) {
+        if (this.target) {
             const directionToTarget = this.getLinearDirectionToTarget(this.target.position, this.position);
             return this.avoidCollisions(directionToTarget);
         }
-        console.warn("No player entity found. Set one with entity.setAsPlayer() to enable enemy movement towards player and control it.");*/
+        console.warn("No player entity found. Set one with entity.setAsPlayer() to enable enemy movement towards player and control it.");
         return {x: 0, y: 0, z: 0};
     }
 

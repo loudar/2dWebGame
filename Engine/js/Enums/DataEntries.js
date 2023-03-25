@@ -7,4 +7,5 @@ export class DataEntries {
     static ELEMENT_FACTORY = "elementFactory";
     static APP_DOM = "appDom";
     static ASPECT_RATIO = "aspectRatio";
+    static INTERVALS = "intervals";
 }

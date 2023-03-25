@@ -1,4 +1,5 @@
 import {DataManager} from "./DataManager.js";
+import {DataEntries} from "../Enums/DataEntries.js";
 
 export class IntervalManager {
     static startInterval(callback, interval) {
@@ -8,7 +9,7 @@ export class IntervalManager {
     }
 
     static stopAllIntervals() {
-        const intervals = DataManager.getArrayKey("intervals");
+        const intervals = DataManager.getArrayKey(DataEntries.INTERVALS);
         intervals.forEach(interval => {
             clearInterval(interval);
         });
@@ -16,11 +17,16 @@ export class IntervalManager {
     }
 
     static stopInterval(interval) {
-        const intervals = DataManager.getArrayKey("intervals");
+        const intervals = DataManager.getArrayKey(DataEntries.INTERVALS);
         const index = intervals.indexOf(interval);
         if (index !== -1) {
             clearInterval(interval);
             intervals.splice(index, 1);
         }
+    }
+
+    static reset() {
+        this.stopAllIntervals();
+        DataManager.removeKey(DataEntries.INTERVALS);
     }
 }

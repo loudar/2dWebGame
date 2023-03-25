@@ -85,4 +85,8 @@ export class LayerManager {
             this.addLayer(layer);
         }
     }
+
+    static reset() {
+        DataManager.removeKey(DataEntries.LAYERS);
+    }
 }
