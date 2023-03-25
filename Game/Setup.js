@@ -26,6 +26,7 @@ import {CustomUiLayerElements} from "./JensElements/CustomUiLayerElements.js";
 import {StyleManager} from "../Engine/js/static/StyleManager.js";
 import {LayerTypes} from "../Engine/js/Enums/LayerTypes.js";
 import {EntityManager} from "../Engine/js/static/EntityManager.js";
+import {PlayerFunctions} from "./Functions/PlayerFunctions.js";
 
 export class Setup {
     static async setup() {
@@ -124,28 +125,8 @@ export class Setup {
             if (!collidingEntity) {
                 return;
             }
-            if (collidingEntity.type === EntityTypes.enemy) {
-                const oldHealth = c.state.getHealth();
-                c.state.setHealth(oldHealth - 1);
-                if (oldHealth === c.state.getHealth()) {
-                    return;
-                }
-                const uiLayer = LayerManager.getLayersByType(LayerTypes.ui)[0];
-                const damageId = UUID.new.generate();
-                uiLayer.addTemplate("damageText" + damageId, UUID.new.generate(), CustomUiLayerElements.damageText, {
-                    text: "-1"
-                }, new Coordinates3D(c.position.x, c.position.y), true);
-                uiLayer.updateElementByName("damageText" + damageId, {
-                    text: "-1"
-                }, new Coordinates3D(c.position.x, c.position.y), true);
-                setTimeout(() => {
-                    uiLayer.removeElementByName("damageText" + damageId);
-                }, 1000);
-                uiLayer.updateElementByName("healthText", {
-                    text: `health: ${c.state.getHealth()}/${c.state.getBaseHealth()}`
-                });
-                uiLayer.updateElementByName("healthImages", {images: HealthHelpers.getHealthImages(c.state)});
-                c.state.setDamageLock();
+            if (collidingEntity.type === EntityTypes.enemy || collidingEntity.type === EntityTypes.bullet) {
+                PlayerFunctions.damage(c, collidingEntity);
             }
         });
         const characterCollision = characterEntity.getCollision().ignoreZ().isNonPhysical();

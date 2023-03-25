@@ -222,4 +222,36 @@ export class Entity {
             this.removeCollision(collision);
         }
     }
+
+    getLinearDirectionToTarget(target, position) {
+        const direction = {
+            x: target.x - position.x,
+            y: target.y - position.y,
+            z: target.z - position.z
+        };
+        return this.normalizeDirection(direction);
+    }
+
+    normalizeDirection(direction) {
+        const normalizeFactor = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+        const preData = {
+            x: direction.x / normalizeFactor,
+            y: direction.y / normalizeFactor,
+            z: direction.z / normalizeFactor
+        };
+        return {
+            x: isNaN(preData.x) ? 0 : preData.x,
+            y: isNaN(preData.y) ? 0 : preData.y,
+            z: isNaN(preData.z) ? 0 : preData.z
+        };
+    }
+
+    setDirection(direction) {
+        this.position.setDX(direction.x);
+        this.position.setDY(direction.y);
+        this.position.setDZ(direction.z);
+        if (this.position.dX !== 0 || this.position.dY !== 0 || this.position.dZ !== 0) {
+            this.changed = true;
+        }
+    }
 }

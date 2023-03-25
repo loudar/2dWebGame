@@ -3,4 +3,5 @@ export class EntityTypes {
     static block = "block";
     static character = "character";
     static enemy = "enemy";
+    static bullet = "bullet";
 }

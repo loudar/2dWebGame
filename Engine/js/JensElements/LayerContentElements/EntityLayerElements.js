@@ -28,4 +28,7 @@ export class EntityLayerElements {
     static enemyEntity = {
         tag: "div", id: d => d.id, classes: ["enemy-entity", "entity"]
     }
+    static bulletEntity = {
+        tag: "div", id: d => d.id, classes: ["bullet-entity", "entity"]
+    }
 }

@@ -4,6 +4,7 @@ import {TypeValidator} from "../../../Meta/TypeValidator.js";
 import {ElementFactory} from "../../../static/ElementFactory.js";
 import {EntityLayerElements} from "../../../JensElements/LayerContentElements/EntityLayerElements.js";
 import {EntityTypes} from "../../../Enums/EntityTypes.js";
+import {EntityManager} from "../../../static/EntityManager.js";
 
 export class EnemyEntity extends Entity {
     constructor(name, texture = new CharacterTexture("#f0f"), size, position, rotation, scale, state) {
@@ -32,14 +33,22 @@ export class EnemyEntity extends Entity {
         node.style.backgroundColor = this.texture.color;
         node.style.backgroundImage = this.texture.image ? `url(${this.texture.image})` : "none";
         node.style.borderColor = this.texture.borderColor;
+        this.shoot();
+    }
+
+    shoot() {
+        if (!this.target) {
+            return;
+        }
+        EntityManager.addBullet(this.target, this.position);
     }
 
     getDirectionToPlayer() {
-        if (this.target) {
+        /*if (this.target) {
             const directionToTarget = this.getLinearDirectionToTarget(this.target.position, this.position);
             return this.avoidCollisions(directionToTarget);
         }
-        console.warn("No player entity found. Set one with entity.setAsPlayer() to enable enemy movement towards player and control it.");
+        console.warn("No player entity found. Set one with entity.setAsPlayer() to enable enemy movement towards player and control it.");*/
         return {x: 0, y: 0, z: 0};
     }
 
@@ -75,38 +84,6 @@ export class EnemyEntity extends Entity {
             }
         }
         return this.normalizeDirection(directionToTarget);
-    }
-
-    getLinearDirectionToTarget(target, position) {
-        const direction = {
-            x: target.x - position.x,
-            y: target.y - position.y,
-            z: target.z - position.z
-        };
-        return this.normalizeDirection(direction);
-    }
-
-    normalizeDirection(direction) {
-        const normalizeFactor = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
-        const preData = {
-            x: direction.x / normalizeFactor,
-            y: direction.y / normalizeFactor,
-            z: direction.z / normalizeFactor
-        };
-        return {
-            x: isNaN(preData.x) ? 0 : preData.x,
-            y: isNaN(preData.y) ? 0 : preData.y,
-            z: isNaN(preData.z) ? 0 : preData.z
-        };
-    }
-
-    setDirection(direction) {
-        this.position.setDX(direction.x);
-        this.position.setDY(direction.y);
-        this.position.setDZ(direction.z);
-        if (this.position.dX !== 0 || this.position.dY !== 0 || this.position.dZ !== 0) {
-            this.changed = true;
-        }
     }
 
     setTarget(target) {
