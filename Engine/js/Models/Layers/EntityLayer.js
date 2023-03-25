@@ -12,13 +12,19 @@ export class EntityLayer extends Layer {
         this.entities.push(entity);
     }
 
+    updateEntity(entity) {
+        this.entities = this.entities.map(e => e.id === entity.id ? entity : e);
+    }
+
     removeEntity(entity) {
         this.entities = this.entities.filter(e => e !== entity);
-        document.getElementById(entity.id).remove();
+        try {
+            document.getElementById(entity.id).remove();
+        } catch (e) {}
         const layers = LayerManager.getLayersByType(LayerTypes.entity);
         layers.forEach(layer => {
             layer.getEntities().forEach(e => {
-                e.collisions = e.collisions.filter(c => c.entity !== entity);
+                e.removeCollisionWithEntity(entity);
             });
         });
     }
@@ -41,6 +47,10 @@ export class EntityLayer extends Layer {
 
     getEntitiesByType(type) {
         return this.entities.filter(e => e.type === type);
+    }
+
+    getEntityById(id) {
+        return this.entities.find(e => e.id === id);
     }
 
     renderContent(layerItem) {

@@ -5,10 +5,10 @@ import {CustomUiLayerElements} from "../JensElements/CustomUiLayerElements.js";
 import {Coordinates3D} from "../../Engine/js/Models/Properties/Coordinates3D.js";
 import {HealthHelpers} from "../Helpers/Player/HealthHelpers.js";
 import {EntityTypes} from "../../Engine/js/Enums/EntityTypes.js";
+import {EntityManager} from "../../Engine/js/static/EntityManager.js";
 
 export class PlayerFunctions {
     static damage(c, collidingEntity) {
-        console.log(collidingEntity.type);
         const oldHealth = c.state.getHealth();
         c.state.setHealth(oldHealth - 1);
         if (oldHealth === c.state.getHealth()) {
@@ -31,11 +31,7 @@ export class PlayerFunctions {
         uiLayer.updateElementByName("healthImages", {images: HealthHelpers.getHealthImages(c.state)});
         c.state.setDamageLock();
         if (collidingEntity.type === EntityTypes.bullet) {
-            const entityLayer = LayerManager.getLayersByType(LayerTypes.entity)[0];
-            entityLayer.removeEntity(collidingEntity);
-        } else {
-            console.log(collidingEntity);
-            console.trace();
+            EntityManager.removeEntity(collidingEntity);
         }
     }
 }

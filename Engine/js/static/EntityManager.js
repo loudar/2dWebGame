@@ -6,6 +6,8 @@ import {UUID} from "../Helpers/UUID.js";
 import {Texture} from "../Models/Properties/Textures/Texture.js";
 import {Size3D} from "../Models/Properties/Size3D.js";
 import {UpdateManager} from "./UpdateManager.js";
+import {Rotation} from "../Models/Properties/Rotation.js";
+import {DefaultsHelper} from "../Helpers/DefaultsHelper.js";
 
 export class EntityManager {
     static update() {
@@ -24,18 +26,54 @@ export class EntityManager {
         return entities;
     }
 
-    static addBullet(target, position) {
+    static getById(id) {
+        const layers = LayerManager.getLayersByType(LayerTypes.entity);
+        for (const layer of layers) {
+            const entity = layer.getEntityById(id);
+            if (entity) {
+                return entity;
+            }
+        }
+        console.warn("Entity with id ", id, " not found.");
+        return null;
+    }
+
+    static removeEntity(entity) {
+        const layers = LayerManager.getLayersByType(LayerTypes.entity);
+        for (const layer of layers) {
+            layer.removeEntity(entity);
+        }
+    }
+
+    static addBullet(targetId, position, state, collisions, lifetime = 5000) {
+        state = DefaultsHelper.overWriteKeys({ following: false, speed: .7 }, state);
+        collisions = DefaultsHelper.overWriteKeys({ world: true, entities: true }, collisions);
         const entityLayer = LayerManager.getLayersByType(LayerTypes.entity)[0];
         const bullets = entityLayer.getEntitiesByType(EntityTypes.bullet);
         if (bullets.length > 0) {
             return;
         }
-        const targetNew = EntityManager.getByType(EntityTypes.character)[0];
-        const bulletEntity = new BulletEntity("bullet" + UUID.new.generate(), targetNew, new Texture("#ff0"), new Size3D(4, 1), position);
-        const targetCollision = targetNew.getCollision().ignoreZ().isNonPhysical();
-        bulletEntity.addCollision(targetCollision);
-        targetNew.changed = true;
+        const targetNew = EntityManager.getById(targetId);
+        let targetPosition;
+        if (state.following === true) {
+            targetPosition = targetNew.position;
+        } else {
+            targetPosition = JSON.parse(JSON.stringify(targetNew.position));
+        }
+        const bulletEntity = new BulletEntity("bullet" + UUID.new.generate(), targetPosition, new Texture("#ff0"), new Size3D(1, 1), position, new Rotation(), 1, state);
+        if (collisions.world) {
+            bulletEntity.addCollisionsWithWorld();
+        }
+        if (collisions.entities) {
+            bulletEntity.addCollisionsWithWorldEntities();
+        }
+        const bulletCollision = bulletEntity.getCollision().ignoreZ().isNonPhysical();
+        targetNew.addCollision(bulletCollision);
+        entityLayer.updateEntity(targetNew);
         entityLayer.addEntity(bulletEntity);
         UpdateManager.updateLayer(entityLayer);
+        setTimeout(() => {
+            EntityManager.removeEntity(bulletEntity);
+        }, lifetime);
     }
 }

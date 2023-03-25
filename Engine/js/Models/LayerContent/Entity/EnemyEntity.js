@@ -5,13 +5,17 @@ import {ElementFactory} from "../../../static/ElementFactory.js";
 import {EntityLayerElements} from "../../../JensElements/LayerContentElements/EntityLayerElements.js";
 import {EntityTypes} from "../../../Enums/EntityTypes.js";
 import {EntityManager} from "../../../static/EntityManager.js";
+import {Coordinates3D} from "../../Properties/Coordinates3D.js";
+import {DefaultsHelper} from "../../../Helpers/DefaultsHelper.js";
 
 export class EnemyEntity extends Entity {
     constructor(name, texture = new CharacterTexture("#f0f"), size, position, rotation, scale, state) {
+        state = DefaultsHelper.overWriteKeys({ speed: .7, shooting: true, shotSpeed: 2000 }, state);
         super(EntityTypes.enemy, name, size, position, rotation, scale, state);
         TypeValidator.validateType(texture, CharacterTexture);
         this.texture = texture;
         this.target = null;
+        this.updateOnTicks = true;
     }
 
     render() {
@@ -28,19 +32,25 @@ export class EnemyEntity extends Entity {
 
     update(node) {
         this.changed = false;
+        if (this.state.shooting) {
+            this.shoot();
+        }
         this.setDirection(this.getDirectionToPlayer());
         super.update(node);
         node.style.backgroundColor = this.texture.color;
         node.style.backgroundImage = this.texture.image ? `url(${this.texture.image})` : "none";
         node.style.borderColor = this.texture.borderColor;
-        this.shoot();
     }
 
     shoot() {
         if (!this.target) {
             return;
         }
-        EntityManager.addBullet(this.target, this.position);
+        if (this.state.lastBulletShot && Date.now() - this.state.lastBulletShot < this.state.shotSpeed) {
+            return;
+        }
+        EntityManager.addBullet(this.target.id, new Coordinates3D(this.position.x, this.position.y, this.position.z), { following: true, speed: .7 });
+        this.state.lastBulletShot = Date.now();
     }
 
     getDirectionToPlayer() {

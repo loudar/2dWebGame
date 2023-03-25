@@ -5,13 +5,18 @@ import {Entity} from "./Entity.js";
 import {ElementFactory} from "../../../static/ElementFactory.js";
 import {EntityLayerElements} from "../../../JensElements/LayerContentElements/EntityLayerElements.js";
 import {Rotation} from "../../Properties/Rotation.js";
+import {DefaultsHelper} from "../../../Helpers/DefaultsHelper.js";
 
 export class BulletEntity extends Entity {
-    constructor(name, target, texture = new Texture(), size, position, rotation, scale, state = { speed: .7 }) {
+    constructor(name, targetPosition, texture = new Texture(), size, position, rotation, scale, state) {
+        state = DefaultsHelper.overWriteKeys({ speed: .7, following: false }, state);
         super(EntityTypes.bullet, name, size, position, rotation, scale, state);
         TypeValidator.validateType(texture, Texture);
         this.texture = texture;
-        this.initialTargetPosition = JSON.parse(JSON.stringify(target.position));
+        this.initialTargetPosition = targetPosition;
+        if (!this.state.following) {
+            this.initialDelta = this.getLinearDirectionToTarget(this.initialTargetPosition, this.position);
+        }
         this.updateOnTicks = true;
     }
 
@@ -28,8 +33,11 @@ export class BulletEntity extends Entity {
     }
 
     update(node) {
-        super.update(node);
-        this.setDirection(this.getLinearDirectionToTarget(this.initialTargetPosition, this.position));
+        if (!this.state.following) {
+            this.setDirection(this.initialDelta);
+        } else {
+            this.setDirection(this.getLinearDirectionToTarget(this.initialTargetPosition, this.position));
+        }
         this.rotation = this.getRotationFromDirection({x: this.position.dX, y: this.position.dY});
         super.update(node);
         node.style.backgroundColor = this.texture.color;

@@ -8,9 +8,14 @@ import {Size3D} from "../../Properties/Size3D.js";
 import {InvertedPositionCollision} from "../../Collisions/InvertedPositionCollision.js";
 import {LayerManager} from "../../../static/LayerManager.js";
 import {LayerTypes} from "../../../Enums/LayerTypes.js";
+import {DataManager} from "../../../static/DataManager.js";
+import {DataEntries} from "../../../Enums/DataEntries.js";
+import {EntityManager} from "../../../static/EntityManager.js";
+import {DefaultsHelper} from "../../../Helpers/DefaultsHelper.js";
 
 export class Entity {
-    constructor(type, name, size = new Size3D(), position = new Coordinates3D(), rotation = new Rotation(), scale = 1, state = {speed: 1}) {
+    constructor(type, name, size = new Size3D(), position = new Coordinates3D(), rotation = new Rotation(), scale = 1, state) {
+        state = DefaultsHelper.overWriteKeys({speed: 1}, state);
         TypeValidator.validateType(type, String);
         this.type = type;
         TypeValidator.validateType(name, String);
@@ -48,7 +53,7 @@ export class Entity {
             this.position.z - this.size.depth / 2,
             this.position.z + this.size.depth / 2
         );
-        if (oldCollision) {
+        if (oldCollision !== null) {
             collision.priority = oldCollision.priority;
             collision.nonPhysical = oldCollision.nonPhysical;
             collision.onlyXY = oldCollision.onlyXY;
@@ -98,16 +103,22 @@ export class Entity {
         if (this.collisions.length > 0) {
             this.checkCollisions();
         }
-        if ((this.position.dX !== 0 || this.position.dY !== 0 || this.position.dX !== 0) && this.hook.onMove) {
-            this.hook.onMove(this);
+        if (this.position.dX !== 0 || this.position.dY !== 0 || this.position.dX !== 0) {
+            if (this.hook.onMove) {
+                this.hook.onMove(this);
+            }
             this.updateCollisionsForOtherEntities();
         }
+    }
+
+    removeCollisionWithEntity(entity) {
+        this.collisions = this.collisions.filter(collision => collision.entity !== entity);
     }
 
     /**
      * Checks if the entity collides with other entities and calls the onCollide hook if defined.
      */
-    checkCollisions(checkedEntities = []) {
+    checkCollisions(checkedEntities = [], dontRecurse = false) {
         if (checkedEntities.includes(this)) {
             return;
         }
@@ -125,11 +136,11 @@ export class Entity {
                 if (!collision.nonPhysical) {
                     this.tryToReverseMovement(success);
                 }
-                if (!success.all && collision.entity !== this && collision.entity !== null && !checkedEntities.includes(collision.entity)) {
-                    collision.entity.checkCollisions(checkedEntities);
-                }
                 if (!success.all && collision.entity !== this && this.hook.onCollide) {
                     this.hook.onCollide(this, collision.entity, collision, success);
+                }
+                if (!success.all && collision.entity !== this && collision.entity !== null && !checkedEntities.includes(collision.entity) && !dontRecurse) {
+                    collision.entity.checkCollisions(checkedEntities, true);
                 }
                 if (runs > 10) {
                     this.position.dX = 0;
@@ -187,6 +198,7 @@ export class Entity {
                     for (let collision of entity.collisions) {
                         if (collision.entity === this) {
                             collision = this.getCollision(collision);
+                            layer.updateEntity(entity);
                         }
                     }
                 }
@@ -252,6 +264,32 @@ export class Entity {
         this.position.setDZ(direction.z);
         if (this.position.dX !== 0 || this.position.dY !== 0 || this.position.dZ !== 0) {
             this.changed = true;
+        }
+    }
+
+    addCollisionsWithWorld() {
+        const worldCollisions = DataManager.getKey(DataEntries.WORLD_COLLISIONS);
+        for (const collisionKey in worldCollisions) {
+            const collision = worldCollisions[collisionKey];
+            this.addCollision(collision);
+        }
+        if (!this.hook.onCollide) {
+            this.hook.setOnCollide((entity) => {
+                EntityManager.removeEntity(entity);
+            });
+        }
+    }
+
+    addCollisionsWithWorldEntities() {
+        const worldEntityCollisions = DataManager.getKey(DataEntries.WORLD_ENTITY_COLLISIONS);
+        for (const collisionKey in worldEntityCollisions) {
+            const collision = worldEntityCollisions[collisionKey];
+            this.addCollision(collision);
+        }
+        if (!this.hook.onCollide) {
+            this.hook.setOnCollide((entity) => {
+                EntityManager.removeEntity(entity);
+            });
         }
     }
 }

@@ -1,25 +1,10 @@
 export class DataEntries {
-    static get TEMPLATES() {
-        return "templates";
-    }
-
-    static get GAME_OPTIONS() {
-        return "gameOptions";
-    }
-
-    static get LAYERS() {
-        return "layers";
-    }
-
-    static get ELEMENT_FACTORY() {
-        return "elementFactory";
-    }
-
-    static get APP_DOM() {
-        return "appDom";
-    }
-
-    static get ASPECT_RATIO() {
-        return "aspectRatio";
-    }
+    static WORLD_ENTITY_COLLISIONS = "worldEntityCollisions";
+    static WORLD_COLLISIONS = "worldCollisions";
+    static TEMPLATES = "templates";
+    static GAME_OPTIONS = "gameOptions";
+    static LAYERS = "layers";
+    static ELEMENT_FACTORY = "elementFactory";
+    static APP_DOM = "appDom";
+    static ASPECT_RATIO = "aspectRatio";
 }

@@ -13,6 +13,7 @@ export class CharacterEntity extends Entity {
         TypeValidator.validateType(texture, CharacterTexture);
         this.texture = texture;
         this.keys = new CharacterKeys();
+        this.updateOnTicks = true;
     }
 
     render() {

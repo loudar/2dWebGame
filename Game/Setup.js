@@ -103,18 +103,19 @@ export class Setup {
             Math.floor(yCollision * floorFactor.y)
         ).ignoreZ().lowPriority();
 
-        return {
+        const collisions = {
             wallCollision,
             floorCollision
-        }
+        };
+        DataManager.addOrUpdateKey(DataEntries.WORLD_COLLISIONS, collisions);
+        return collisions;
     }
 
     static setupEntities(worldCollisions) {
+        const worldEntities = this.setupWorldEntities();
         const entityLayer = new EntityLayer("testEntity");
         const enemyEntity = new EnemyEntity("enemy", new CharacterTexture("#f0f"), new Size3D(5, 5), new Coordinates3D(200, 200));
         enemyEntity.setSpeed(.5);
-        const blockEntity2 = new BlockEntity("test", new Texture("#fff"), new Size3D(100, 100), new Coordinates3D(100, 100), new Rotation(0));
-        const boxCollision = blockEntity2.getCollision().ignoreZ().lowPriority();
         const enemyCollision = enemyEntity.getCollision().ignoreZ().isNonPhysical();
 
         const characterEntity = new CharacterEntity("test", new CharacterTexture(), new Size3D(10, 10), new Coordinates3D(0, 0), new Rotation(0), 1, new PlayerState(3, 3));
@@ -130,10 +131,10 @@ export class Setup {
             }
         });
         const characterCollision = characterEntity.getCollision().ignoreZ().isNonPhysical();
-        enemyEntity.addCollisions(worldCollisions.floorCollision, boxCollision, characterCollision);
-        entityLayer.addEntities(enemyEntity, blockEntity2, characterEntity);
+        enemyEntity.addCollisions(worldCollisions.floorCollision, worldEntities.boxCollision, characterCollision);
+        entityLayer.addEntities(enemyEntity, characterEntity);
 
-        characterEntity.addCollisions(enemyCollision, worldCollisions.floorCollision, boxCollision);
+        characterEntity.addCollisions(worldCollisions.floorCollision, worldEntities.boxCollision);
         characterEntity.hook.setOnMove(c => {
             const uiLayer = LayerManager.getLayersByType(LayerTypes.ui)[0];
             uiLayer.updateElementByName("positionText", {
@@ -142,5 +143,21 @@ export class Setup {
         })
 
         LayerManager.addLayers(entityLayer);
+    }
+
+    static setupWorldEntities() {
+        const blockEntity2 = new BlockEntity("test", new Texture("#fff"), new Size3D(100, 100), new Coordinates3D(100, 100), new Rotation(0));
+        const boxCollision = blockEntity2.getCollision().ignoreZ().lowPriority();
+
+        const worldEntityLayer = new EntityLayer("worldEntities");
+        worldEntityLayer.addEntities(blockEntity2);
+
+        LayerManager.addLayers(worldEntityLayer);
+
+        const collisions = {
+            boxCollision
+        };
+        DataManager.addOrUpdateKey(DataEntries.WORLD_ENTITY_COLLISIONS, collisions);
+        return collisions;
     }
 }
