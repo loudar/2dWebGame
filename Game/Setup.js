@@ -27,6 +27,7 @@ import {StyleManager} from "../Engine/js/static/StyleManager.js";
 import {LayerTypes} from "../Engine/js/Enums/LayerTypes.js";
 import {EntityManager} from "../Engine/js/static/EntityManager.js";
 import {PlayerFunctions} from "./Functions/PlayerFunctions.js";
+import {WorldGenerator} from "./Generators/WorldGenerator.js";
 
 export class Setup {
     static async setup() {
@@ -146,18 +147,31 @@ export class Setup {
     }
 
     static setupWorldEntities() {
+        const worldEntityLayer = new EntityLayer("worldEntities");
+        //const collisions = this.setupGeneratedEntities(worldEntityLayer);
+
+
         const blockEntity2 = new BlockEntity("test", new Texture("#fff"), new Size3D(100, 100), new Coordinates3D(100, 100), new Rotation(0));
         const boxCollision = blockEntity2.getCollision().ignoreZ().lowPriority();
-
-        const worldEntityLayer = new EntityLayer("worldEntities");
         worldEntityLayer.addEntities(blockEntity2);
-
-        LayerManager.addLayers(worldEntityLayer);
 
         const collisions = {
             boxCollision
         };
         DataManager.addOrUpdateKey(DataEntries.WORLD_ENTITY_COLLISIONS, collisions);
+        LayerManager.addLayers(worldEntityLayer);
+        return collisions;
+    }
+
+    static setupGeneratedEntities(layer) {
+        const rooms = WorldGenerator.generateRooms();
+        let collisions = [];
+        const startRoom = rooms[0];
+        for (const tile of startRoom.tiles) {
+            const blockEntity = new BlockEntity("test", new Texture("#fff"), new Size3D(10, 10), new Coordinates3D(tile.position.x * 100, tile.position.y * 100), new Rotation(0));
+            collisions.push(blockEntity.getCollision().ignoreZ().lowPriority());
+            layer.addEntities(blockEntity);
+        }
         return collisions;
     }
 }
