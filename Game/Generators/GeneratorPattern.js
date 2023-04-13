@@ -1,6 +1,7 @@
 export class GeneratorPattern {
     constructor(randomizer = null) {
         this.setRandomizer(randomizer);
+        this.tileChance = 30;
     }
 
     setRandomizer(randomizer) {
@@ -48,7 +49,10 @@ export class GeneratorPattern {
         const tiles = [];
         for (let x = 0; x < patternSize.x; x++) {
             for (let y = 0; y < patternSize.y; y++) {
-                tiles.push(this.generateRandomTile(x, y, options));
+                const randomTile = this.generateRandomTile(x, y, options);
+                if (randomTile !== null) {
+                    tiles.push(randomTile);
+                }
             }
         }
         return tiles;
@@ -58,6 +62,9 @@ export class GeneratorPattern {
         const rnd = this.randomizer.generate(options);
         if (rnd === undefined || rnd === null || isNaN(rnd) || rnd < 0 || rnd > 100) {
             console.warn("GeneratorPattern: randomizer.generate returned invalid value (should be a number between 0 and 100)", rnd);
+        }
+        if (rnd > this.tileChance) {
+            return null;
         }
         const xOffset = options.xOffset || 0;
         const yOffset = options.yOffset || 0;

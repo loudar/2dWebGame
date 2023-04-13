@@ -113,7 +113,7 @@ export class Setup {
     }
 
     static setupEntities(worldCollisions) {
-        const worldEntities = this.setupWorldEntities();
+        const worldEntityCollisions = this.setupWorldEntities(worldCollisions);
         const entityLayer = new EntityLayer("testEntity");
         const enemyEntity = new EnemyEntity("enemy", new CharacterTexture("#f0f"), new Size3D(5, 5), new Coordinates3D(200, 200));
         enemyEntity.setSpeed(.5);
@@ -132,10 +132,12 @@ export class Setup {
             }
         });
         const characterCollision = characterEntity.getCollision().ignoreZ().isNonPhysical();
-        enemyEntity.addCollisions(worldCollisions.floorCollision, worldEntities.boxCollision, characterCollision);
+        enemyEntity.addCollisions(worldCollisions.floorCollision, characterCollision);
+        enemyEntity.addCollisions(...worldEntityCollisions);
         entityLayer.addEntities(enemyEntity, characterEntity);
 
-        characterEntity.addCollisions(worldCollisions.floorCollision, worldEntities.boxCollision, enemyCollision);
+        characterEntity.addCollisions(worldCollisions.floorCollision, enemyCollision);
+        characterEntity.addCollisions(...worldEntityCollisions);
         characterEntity.hook.setOnMove(c => {
             const uiLayer = LayerManager.getLayersByType(LayerTypes.ui)[0];
             uiLayer.updateElementByName("positionText", {
@@ -146,30 +148,38 @@ export class Setup {
         LayerManager.addLayers(entityLayer);
     }
 
-    static setupWorldEntities() {
+    static setupWorldEntities(worldCollisions) {
         const worldEntityLayer = new EntityLayer("worldEntities");
-        //const collisions = this.setupGeneratedEntities(worldEntityLayer);
+        const collisions = this.setupGeneratedEntities(worldEntityLayer, worldCollisions);
 
-
+        /*
         const blockEntity2 = new BlockEntity("test", new Texture("#fff"), new Size3D(100, 100), new Coordinates3D(100, 100), new Rotation(0));
         const boxCollision = blockEntity2.getCollision().ignoreZ().lowPriority();
         worldEntityLayer.addEntities(blockEntity2);
 
         const collisions = {
             boxCollision
-        };
+        };*/
         DataManager.addOrUpdateKey(DataEntries.WORLD_ENTITY_COLLISIONS, collisions);
         LayerManager.addLayers(worldEntityLayer);
         return collisions;
     }
 
-    static setupGeneratedEntities(layer) {
-        const rooms = WorldGenerator.generateRooms();
+    static setupGeneratedEntities(layer, worldCollisions) {
+        const rooms = WorldGenerator.generateRooms(1, {x: 10, y: 10});
         let collisions = [];
         const startRoom = rooms[0];
+        const windowScale = AspectRatioHelper.getWindowScale();
         for (const tile of startRoom.tiles) {
-            const blockEntity = new BlockEntity("test", new Texture("#fff"), new Size3D(10, 10), new Coordinates3D(tile.position.x * 100, tile.position.y * 100), new Rotation(0));
-            collisions.push(blockEntity.getCollision().ignoreZ().lowPriority());
+            const x = tile.position.x - 5;
+            const y = tile.position.y - 5;
+            const blockEntity = new BlockEntity("tile", new Texture("#fff"), new Size3D(10, 10), new Coordinates3D(x * 50 * windowScale.ar, y * 50), new Rotation(0));
+            const floorCollisionSuccess = worldCollisions.floorCollision.success(blockEntity);
+            if (!floorCollisionSuccess.all) {
+                continue;
+            }
+            const collision = blockEntity.getCollision().ignoreZ().lowPriority();
+            collisions.push(collision);
             layer.addEntities(blockEntity);
         }
         return collisions;
