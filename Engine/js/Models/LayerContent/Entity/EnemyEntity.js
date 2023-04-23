@@ -49,7 +49,7 @@ export class EnemyEntity extends Entity {
         if (this.state.lastBulletShot && Date.now() - this.state.lastBulletShot < this.state.shotSpeed) {
             return;
         }
-        EntityManager.addBullet(this.target.id, new Coordinates3D(this.position.x, this.position.y, this.position.z), { following: true, speed: .7 });
+        EntityManager.addBullet(this.target.id, new Coordinates3D(this.position.x, this.position.y, this.position.z), { following: false, speed: .7 });
         this.state.lastBulletShot = Date.now();
     }
 
@@ -63,7 +63,6 @@ export class EnemyEntity extends Entity {
     }
 
     avoidCollisions(directionToTarget) {
-        const avoidanceForce = .75;
         for (let collision of this.collisions) {
             if (!collision.entity) {
                 continue;
@@ -80,23 +79,45 @@ export class EnemyEntity extends Entity {
                         closestCorner = corner;
                     }
                 }
-                if (closestDistance <= collision.entity.size.width / 2) {
-                    const directionToCenter = this.getLinearDirectionToTarget(collision.entity.position, this.position);
-                    directionToTarget.x -= directionToCenter.x * avoidanceForce;
-                    directionToTarget.y -= directionToCenter.y * avoidanceForce;
-                    directionToTarget.z -= directionToCenter.z * avoidanceForce;
-                    if (closestDistance <= this.size.width * 2) {
-                        directionToTarget.x -= directionToCenter.x * avoidanceForce;
-                        directionToTarget.y -= directionToCenter.y * avoidanceForce;
-                        directionToTarget.z -= directionToCenter.z * avoidanceForce;
-                    }
+                const triggerDistance = collision.entity.size.width * 0.75;
+                if (closestDistance <= triggerDistance) {
+                    /*if (closestDistance >= triggerDistance / 2) {
+                        directionToTarget = this.moveTowardsCorner(closestCorner, closestDistance, triggerDistance, directionToTarget);
+                    }*/
+                    directionToTarget = this.moveAwayFromCenter(collision, closestDistance, triggerDistance, directionToTarget);
                 }
             }
         }
         return this.normalizeDirection(directionToTarget);
     }
 
+    moveAwayFromCenter(collision, closestDistance, triggerDistance, directionToTarget) {
+        const directionToCenter = this.getLinearDirectionToTarget(collision.entity.position, this.position);
+        let avoidanceForce = .8 * (1 - (closestDistance / triggerDistance));
+        if (closestDistance <= this.size.width * 2) {
+            directionToTarget.x = -directionToCenter.x;
+            directionToTarget.y = -directionToCenter.y;
+            directionToTarget.z = -directionToCenter.z;
+        } else {
+            directionToTarget.x -= directionToCenter.x * avoidanceForce;
+            directionToTarget.y -= directionToCenter.y * avoidanceForce;
+            directionToTarget.z -= directionToCenter.z * avoidanceForce;
+        }
+
+        return directionToTarget;
+    }
+
     setTarget(target) {
         this.target = target;
+    }
+
+    moveTowardsCorner(closestCorner, closestDistance, triggerDistance, directionToTarget) {
+        const directionToCorner = this.getLinearDirectionToTarget(closestCorner, this.position);
+        const influence = .2;
+        directionToTarget.x += directionToCorner.x * influence;
+        directionToTarget.y += directionToCorner.y * influence;
+        directionToTarget.z += directionToCorner.z * influence;
+
+        return directionToTarget;
     }
 }
