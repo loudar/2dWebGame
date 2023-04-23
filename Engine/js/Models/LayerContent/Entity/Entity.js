@@ -175,17 +175,17 @@ export class Entity {
         switch (success.closestBordersDistance.border) {
             case "x":
                 if (!success.x && !success.all) {
-                    this.position.setX(this.position.x - (success.closestBordersDistance.distance * Math.sign(this.position.dX)));
+                    this.position.setX(this.position.x - (success.closestBordersDistance.distance * Math.sign(this.position.dX)) - 0.01);
                 }
                 break;
             case "y":
                 if (!success.y && !success.all) {
-                    this.position.setY(this.position.y - (success.closestBordersDistance.distance * Math.sign(this.position.dY)));
+                    this.position.setY(this.position.y - (success.closestBordersDistance.distance * Math.sign(this.position.dY)) - 0.01);
                 }
                 break;
             case "z":
                 if (!success.z && !success.all) {
-                    this.position.setZ(this.position.z - (success.closestBordersDistance.distance * Math.sign(this.position.dZ)));
+                    this.position.setZ(this.position.z - (success.closestBordersDistance.distance * Math.sign(this.position.dZ)) - 0.01);
                 }
         }
     }
