@@ -8,4 +8,5 @@ export class DataEntries {
     static APP_DOM = "appDom";
     static ASPECT_RATIO = "aspectRatio";
     static INTERVALS = "intervals";
+    static GLOBAL_POSITION_OFFSET = "globalPositionOffset";
 }

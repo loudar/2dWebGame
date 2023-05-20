@@ -78,8 +78,9 @@ export class Entity {
         }
         this.updatePosition();
         const windowScale = AspectRatioHelper.getWindowScale();
-        const x = this.position.x * windowScale.x;
-        const y = this.position.y * windowScale.y * windowScale.ar;
+        const globalPositionOffset = DataManager.getKey(DataEntries.GLOBAL_POSITION_OFFSET);
+        const x = (this.position.x + globalPositionOffset.x) * windowScale.x;
+        const y = (this.position.y + globalPositionOffset.y) * windowScale.y * windowScale.ar;
         node.style.transform = `translate(${x}px, ${y}px) scale(${this.scale}) rotate(${this.rotation.zDegrees}deg) translate(-50%, -50%)`;
         node.style.width = windowScale.x * this.size.width + "px";
         node.style.height = windowScale.y * windowScale.ar * this.size.height + "px";

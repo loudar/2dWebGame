@@ -9,6 +9,8 @@ export class InvertedPositionCollision extends Collision {
         this.yMax = yMax || 0;
         this.zMin = zMin || 0;
         this.zMax = zMax || 0;
+        this.width = Math.abs(this.xMax - this.xMin);
+        this.height = Math.abs(this.yMax - this.yMin);
         this.onlyXY = false;
     }
 

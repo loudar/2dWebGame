@@ -8,7 +8,6 @@ import {AspectRatioHelper} from "../Engine/js/Helpers/AspectRatioHelper.js";
 import {EntityLayer} from "../Engine/js/Models/Layers/EntityLayer.js";
 import {Size3D} from "../Engine/js/Models/Properties/Size3D.js";
 import {CharacterEntity} from "../Engine/js/Models/LayerContent/Entity/CharacterEntity.js";
-import {CharacterTexture} from "../Engine/js/Models/Properties/Textures/CharacterTexture.js";
 import {BlockEntity} from "../Engine/js/Models/LayerContent/Entity/BlockEntity.js";
 import {Texture} from "../Engine/js/Models/Properties/Textures/Texture.js";
 import {Coordinates3D} from "../Engine/js/Models/Properties/Coordinates3D.js";
@@ -28,12 +27,19 @@ import {LayerTypes} from "../Engine/js/Enums/LayerTypes.js";
 import {EntityManager} from "../Engine/js/static/EntityManager.js";
 import {PlayerFunctions} from "./Functions/PlayerFunctions.js";
 import {WorldGenerator} from "./Generators/WorldGenerator.js";
+import {ImageAssets} from "./Assets/ImageAssets.js";
+import {ColorAssets} from "./Assets/ColorAssets.js";
 
 export class Setup {
     static async setup() {
         StyleManager.registerCustomStylesheet("globalOverride", "Game/Styles/global.css");
         StyleManager.registerCustomStylesheet("globalOverride", "Game/Styles/elements.css");
         const gameOptions = DataManager.getKey(DataEntries.GAME_OPTIONS);
+        const globalPositionOffset = {
+            x: 0,
+            y: 0,
+        };
+        DataManager.addOrUpdateKey(DataEntries.GLOBAL_POSITION_OFFSET, globalPositionOffset);
 
         const aspectRatio = await this.setupBackground();
 
@@ -52,7 +58,7 @@ export class Setup {
     }
 
     static async setupBackground() {
-        const imgSource = "assets/images/Stage_Basement_room.webp";
+        const imgSource = ImageAssets.Background;
         const image = new Image(imgSource);
         const aspectRatio = await AspectRatioHelper.getAspectRatioFromImageSource(imgSource);
         DataManager.addOrUpdateKey(DataEntries.ASPECT_RATIO, Math.round(aspectRatio * 100) / 100);
@@ -94,8 +100,8 @@ export class Setup {
             Math.floor(yCollision)
         ).ignoreZ();
         const floorFactor = {
-            x: 0.775,
-            y: 0.65
+            x: 0.857,
+            y: 0.75
         };
         const floorCollision = new PositionCollision(
             Math.floor(-xCollision * floorFactor.x),
@@ -112,17 +118,33 @@ export class Setup {
         return collisions;
     }
 
+    static insertRandomEnemy() {
+        console.log("inserting enemy");
+        const worldCollisions = DataManager.getKey(DataEntries.WORLD_COLLISIONS);
+        const entityLayer = LayerManager.getLayerByName("characters");
+        const characterEntity = EntityManager.getByType(EntityTypes.character)[0];
+        const characterCollision = characterEntity.getCollision().ignoreZ().isNonPhysical();
+
+        const newEnemyPosition = new Coordinates3D(
+            Math.random() * worldCollisions.floorCollision.width - (worldCollisions.floorCollision.width / 2),
+            Math.random() * worldCollisions.floorCollision.height - (worldCollisions.floorCollision.height / 2)
+        );
+        const newEnemy = new EnemyEntity("enemy" + Math.random().toString(), ColorAssets.Enemy, new Size3D(5, 5), newEnemyPosition);
+        const newEnemyCollision = newEnemy.getCollision().ignoreZ().isNonPhysical();
+        newEnemy.addCollisions(worldCollisions.floorCollision, characterCollision);
+        newEnemy.setSpeed(.5);
+        newEnemy.setTarget(characterEntity);
+        characterEntity.addCollisions(newEnemyCollision);
+        entityLayer.addEntities(newEnemy);
+        UpdateManager.updateLayer(entityLayer);
+    }
+
     static setupEntities(worldCollisions) {
-        const worldEntityCollisions = this.setupWorldEntities(worldCollisions);
-        const entityLayer = new EntityLayer("testEntity");
-        const enemyEntity = new EnemyEntity("enemy", new CharacterTexture("#f0f"), new Size3D(5, 5), new Coordinates3D(200, 200));
-        enemyEntity.setSpeed(.5);
-        const enemyCollision = enemyEntity.getCollision().ignoreZ().isNonPhysical();
-
-        const characterEntity = new CharacterEntity("test", new CharacterTexture(), new Size3D(10, 10), new Coordinates3D(0, 0), new Rotation(0), 1, new PlayerState(3, 3));
+        //const worldEntityCollisions = this.setupWorldEntities(worldCollisions);
+        const entityLayer = new EntityLayer("characters");
+        const characterEntity = new CharacterEntity("test", ColorAssets.Player, new Size3D(10, 10), new Coordinates3D(0, 0), new Rotation(0), 1, new PlayerState(3, 3));
         characterEntity.setAsPlayer();
-        enemyEntity.setTarget(characterEntity);
-
+        const characterCollision = characterEntity.getCollision().ignoreZ().isNonPhysical();
         characterEntity.hook.setOnCollide(async (c, collidingEntity, collision, collisionSuccess) => {
             if (!collidingEntity) {
                 return;
@@ -131,13 +153,23 @@ export class Setup {
                 await PlayerFunctions.damage(c, collidingEntity);
             }
         });
-        const characterCollision = characterEntity.getCollision().ignoreZ().isNonPhysical();
-        enemyEntity.addCollisions(worldCollisions.floorCollision, characterCollision);
-        enemyEntity.addCollisions(...worldEntityCollisions);
-        entityLayer.addEntities(enemyEntity, characterEntity);
+        entityLayer.addEntities(characterEntity);
 
-        characterEntity.addCollisions(worldCollisions.floorCollision, enemyCollision);
-        characterEntity.addCollisions(...worldEntityCollisions);
+        /*
+        const enemyEntity = new EnemyEntity("enemy", ColorAssets.Enemy, new Size3D(5, 5), new Coordinates3D(200, 200));
+        const enemyCollision = enemyEntity.getCollision().ignoreZ().isNonPhysical();
+        enemyEntity.setSpeed(.5);
+        enemyEntity.setTarget(characterEntity);
+        enemyEntity.addCollisions(worldCollisions.floorCollision, characterCollision);
+        //enemyEntity.addCollisions(...worldEntityCollisions);
+        entityLayer.addEntities(enemyEntity);
+        characterEntity.addCollisions(enemyCollision);
+        */
+
+        setTimeout(Setup.insertRandomEnemy, 2000);
+
+        characterEntity.addCollisions(worldCollisions.floorCollision);
+        //characterEntity.addCollisions(...worldEntityCollisions);
         characterEntity.hook.setOnMove(c => {
             const uiLayer = LayerManager.getLayersByType(LayerTypes.ui)[0];
             uiLayer.updateElementByName("positionText", {
@@ -166,14 +198,15 @@ export class Setup {
     }
 
     static setupGeneratedEntities(layer, worldCollisions) {
-        const rooms = WorldGenerator.generateRooms(1, {x: 10, y: 10});
+        const rooms = WorldGenerator.generateRooms(1, {x: 19, y: 10});
         let collisions = [];
         const startRoom = rooms[0];
         const windowScale = AspectRatioHelper.getWindowScale();
+        const blockSize = 35;
         for (const tile of startRoom.tiles) {
             const x = tile.position.x - 5;
             const y = tile.position.y - 5;
-            const blockEntity = new BlockEntity("tile", new Texture("#fff"), new Size3D(10, 10), new Coordinates3D(x * 50 * windowScale.ar, y * 50), new Rotation(0));
+            const blockEntity = new BlockEntity("tile", new Texture("#aaa"), new Size3D(blockSize, blockSize), new Coordinates3D(x * 50 * windowScale.ar, y * 50), new Rotation(0));
             const floorCollisionSuccess = worldCollisions.floorCollision.success(blockEntity);
             if (!floorCollisionSuccess.all) {
                 continue;
