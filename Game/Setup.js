@@ -29,6 +29,8 @@ import {PlayerFunctions} from "./Functions/PlayerFunctions.js";
 import {WorldGenerator} from "./Generators/WorldGenerator.js";
 import {ImageAssets} from "./Assets/ImageAssets.js";
 import {ColorAssets} from "./Assets/ColorAssets.js";
+import {ActionTypes} from "../Engine/js/Models/ActionTypes.js";
+import {WorldFunctions} from "./Functions/WorldFunctions";
 
 export class Setup {
     static async setup() {
@@ -100,8 +102,8 @@ export class Setup {
             Math.floor(yCollision)
         ).ignoreZ();
         const floorFactor = {
-            x: 0.857,
-            y: 0.75
+            x: 0.8,
+            y: 0.55
         };
         const floorCollision = new PositionCollision(
             Math.floor(-xCollision * floorFactor.x),
@@ -142,7 +144,7 @@ export class Setup {
     static setupEntities(worldCollisions) {
         //const worldEntityCollisions = this.setupWorldEntities(worldCollisions);
         const entityLayer = new EntityLayer("characters");
-        const characterEntity = new CharacterEntity("test", ColorAssets.Player, new Size3D(50, 50), new Coordinates3D(0, 0), new Rotation(0), 1, new PlayerState(3, 3));
+        const characterEntity = new CharacterEntity("test", ColorAssets.Player, new Size3D(40, 52), new Coordinates3D(0, 0), new Rotation(0), 1, new PlayerState(3, 3));
         characterEntity.setAsPlayer();
         const characterCollision = characterEntity.getCollision().ignoreZ().isNonPhysical();
         characterEntity.hook.setOnCollide(async (c, collidingEntity, collision, collisionSuccess) => {
@@ -152,6 +154,10 @@ export class Setup {
             if (collidingEntity.type === EntityTypes.enemy || collidingEntity.type === EntityTypes.bullet) {
                 await PlayerFunctions.damage(c, collidingEntity);
             }
+        });
+        characterEntity.hook.setOnAction(ActionTypes.key_space, (entity, data) => {
+            console.log("space has been pressed for " + data.count + " times");
+            WorldFunctions.damageInRadiusFromCoordinates3d(entity.position, entity.size.width, 1);
         });
         entityLayer.addEntities(characterEntity);
 

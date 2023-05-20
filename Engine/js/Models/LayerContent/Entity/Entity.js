@@ -68,6 +68,15 @@ export class Entity {
         }
     }
 
+    triggerActionHook(actionType, additionalData = null) {
+        if (!this.hook.actionHooks) {
+            return;
+        }
+        if (this.hook.actionHooks[actionType]) {
+            this.hook.actionHooks[actionType](this, additionalData);
+        }
+    }
+
     /**
      * Updates the node with the current values.
      * @param node {HTMLElement} The node to update.

@@ -9,21 +9,21 @@ import {EntityManager} from "../../Engine/js/static/EntityManager.js";
 import {Game} from "../Game.js";
 
 export class PlayerFunctions {
-    static async damage(c, collidingEntity) {
+    static async damage(player, collidingEntity) {
         if (collidingEntity.type === EntityTypes.bullet) {
             EntityManager.removeEntity(collidingEntity);
         }
-        const oldHealth = c.state.getHealth();
-        c.state.setHealth(oldHealth - 1);
-        if (oldHealth === c.state.getHealth()) {
+        const oldHealth = player.state.getHealth();
+        player.state.setHealth(oldHealth - 1);
+        if (oldHealth === player.state.getHealth()) {
             return;
         }
         const uiLayer = LayerManager.getLayersByType(LayerTypes.ui)[0];
         const damageId = UUID.new.generate();
-        this.addDamageText(c, uiLayer, damageId);
-        this.updateHealthDisplay(c);
-        c.state.setDamageLock();
-        if (c.state.getHealth() === 0) {
+        this.addDamageText(player, uiLayer, damageId);
+        this.updateHealthDisplay(player);
+        player.state.setDamageLock();
+        if (player.state.getHealth() === 0) {
             await Game.reset();
         }
     }

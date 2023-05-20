@@ -23,7 +23,7 @@ export class EntityLayerElements {
         }
     }
     static characterEntity = {
-        tag: "div", id: d => d.id, classes: ["character-entity", "entity", d => d.texture.image !== null ? "no-bg" : "_"], children: [
+        tag: "div", id: d => d.id, classes: ["character-entity", "entity"], children: [
             {
                 condition: d => d.texture.image !== null,
                 tag: "img", classes: ["entity-image"], attributes: {
@@ -34,7 +34,7 @@ export class EntityLayerElements {
         ]
     }
     static enemyEntity = {
-        tag: "div", id: d => d.id, classes: ["enemy-entity", "entity", d => d.texture.image !== null ? "no-bg" : "_"], children: [
+        tag: "div", id: d => d.id, classes: ["enemy-entity", "entity"], children: [
             {
                 condition: d => d.texture.image !== null,
                 tag: "img", classes: ["entity-image"], attributes: {

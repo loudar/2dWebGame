@@ -6,6 +6,7 @@ import {EntityLayerElements} from "../../../JensElements/LayerContentElements/En
 import {CharacterOptions} from "../../Options/CharacterOptions.js";
 import {CharacterKeys} from "../../Keys/CharacterKeys.js";
 import {EntityTypes} from "../../../Enums/EntityTypes.js";
+import {ActionTypes} from "../../ActionTypes.js";
 
 export class CharacterEntity extends Entity {
     constructor(name, texture = new CharacterTexture(), size, position, rotation, scale, state) {
@@ -32,6 +33,7 @@ export class CharacterEntity extends Entity {
         this.changed = false;
         this.updatePositionByKeys();
         super.update(node);
+        node.style.backgroundColor = this.texture.image !== null ? "transparent" : this.texture.color;
         node.style.borderColor = this.texture.borderColor;
     }
 
@@ -60,6 +62,11 @@ export class CharacterEntity extends Entity {
             case "d":
                 this.keys.right = true;
                 break;
+            case " ":
+                this.keys.counts.space++;
+                this.keys.space = true;
+                this.triggerActionHook(ActionTypes.key_space, { count: this.keys.counts.space });
+                break;
         }
         this.updatePositionByKeys();
     }
@@ -77,6 +84,10 @@ export class CharacterEntity extends Entity {
                 break;
             case "d":
                 this.keys.right = false;
+                break;
+            case " ":
+                this.keys.counts.space = 0;
+                this.keys.space = false;
                 break;
         }
         this.updatePositionByKeys();

@@ -45,4 +45,9 @@ export class Coordinates3D {
         TypeValidator.validateType(dZ, Number);
         this.dZ = dZ;
     }
+
+    distanceTo(coordinates3D) {
+        TypeValidator.validateType(coordinates3D, Coordinates3D);
+        return Math.sqrt(Math.pow(this.x - coordinates3D.x, 2) + Math.pow(this.y - coordinates3D.y, 2) + Math.pow(this.z - coordinates3D.z, 2));
+    }
 }

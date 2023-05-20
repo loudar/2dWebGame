@@ -37,6 +37,7 @@ export class EnemyEntity extends Entity {
         }
         this.setDirection(this.getDirectionToPlayer());
         super.update(node);
+        node.style.backgroundColor = this.texture.image !== null ? "transparent" : this.texture.color;
         node.style.borderColor = this.texture.borderColor;
     }
 

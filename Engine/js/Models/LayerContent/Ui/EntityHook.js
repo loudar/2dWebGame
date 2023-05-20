@@ -43,4 +43,11 @@ export class EntityHook extends Hook {
     setOnCollide(onCollide) {
         this.onCollide = onCollide;
     }
+
+    setOnAction(actionType, onAction) {
+        if (!this.actionHooks) {
+            this.actionHooks = {};
+        }
+        this.actionHooks[actionType] = onAction;
+    }
 }
