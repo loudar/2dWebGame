@@ -74,7 +74,7 @@ export class EntityLayer extends Layer {
             if (entityNode) {
                 entity.update(entityNode);
             } else {
-                console.warn("Entity ", entity, " does not have a corresponding element. (Constructor: ", entity.constructor, ")");
+                //console.warn("Entity ", entity, " does not have a corresponding element. (Constructor: ", entity.constructor, ")");
             }
         });
     }

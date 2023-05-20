@@ -3,11 +3,11 @@ import {LayerManager} from "./LayerManager.js";
 import {EntityTypes} from "../Enums/EntityTypes.js";
 import {BulletEntity} from "../Models/LayerContent/Entity/BulletEntity.js";
 import {UUID} from "../Helpers/UUID.js";
-import {Texture} from "../Models/Properties/Textures/Texture.js";
 import {Size3D} from "../Models/Properties/Size3D.js";
 import {UpdateManager} from "./UpdateManager.js";
 import {Rotation} from "../Models/Properties/Rotation.js";
 import {DefaultsHelper} from "../Helpers/DefaultsHelper.js";
+import {ColorAssets} from "../../../Game/Assets/ColorAssets.js";
 
 export class EntityManager {
     static update() {
@@ -60,7 +60,7 @@ export class EntityManager {
         } else {
             targetPosition = JSON.parse(JSON.stringify(targetNew.position));
         }
-        const bulletEntity = new BulletEntity("bullet" + UUID.new.generate(), targetPosition, new Texture("#ff0"), new Size3D(1, 1), position, new Rotation(), 1, state);
+        const bulletEntity = new BulletEntity("bullet" + UUID.new.generate(), targetPosition, ColorAssets.Bullet, new Size3D(1, 1), position, new Rotation(), 1, state);
         if (collisions.world) {
             bulletEntity.addCollisionsWithWorld();
         }

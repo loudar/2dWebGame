@@ -10,7 +10,7 @@ import {DefaultsHelper} from "../../../Helpers/DefaultsHelper.js";
 
 export class EnemyEntity extends Entity {
     constructor(name, texture = new CharacterTexture("#f0f"), size, position, rotation, scale, state) {
-        state = DefaultsHelper.overWriteKeys({ speed: .7, shooting: true, shotSpeed: 2000 }, state);
+        state = DefaultsHelper.overWriteKeys({ speed: .7, shooting: false, shotSpeed: 2000 }, state);
         super(EntityTypes.enemy, name, size, position, rotation, scale, state);
         TypeValidator.validateType(texture, CharacterTexture);
         this.texture = texture;

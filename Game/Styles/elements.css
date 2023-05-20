@@ -8,6 +8,16 @@
     opacity: 0;
 }
 
+.damageTextEnemy {
+    color: #0000ff;
+    font-size: 1.5em;
+    font-weight: bold;
+    text-shadow: 0 0 5px #0000ff;
+    z-index: 100;
+    animation: damage-text 1s ease-out;
+    opacity: 0;
+}
+
 @keyframes damage-text {
     0% {
         opacity: 1;
@@ -16,5 +26,23 @@
     100% {
         opacity: 0;
         translate: 0 -100px;
+    }
+}
+
+.damage-indicator {
+    background-color: #ff0000;
+    border-radius: 50%;
+    position: absolute;
+    z-index: 100;
+    animation: damage-indicator 1s ease-out;
+    opacity: 0;
+}
+
+@keyframes damage-indicator {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
     }
 }

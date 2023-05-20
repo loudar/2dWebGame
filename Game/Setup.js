@@ -30,7 +30,8 @@ import {WorldGenerator} from "./Generators/WorldGenerator.js";
 import {ImageAssets} from "./Assets/ImageAssets.js";
 import {ColorAssets} from "./Assets/ColorAssets.js";
 import {ActionTypes} from "../Engine/js/Models/ActionTypes.js";
-import {WorldFunctions} from "./Functions/WorldFunctions";
+import {WorldFunctions} from "./Functions/WorldFunctions.js";
+import {EnemyState} from "./Models/States/EnemyState.js";
 
 export class Setup {
     static async setup() {
@@ -131,7 +132,7 @@ export class Setup {
             Math.random() * worldCollisions.floorCollision.width - (worldCollisions.floorCollision.width / 2),
             Math.random() * worldCollisions.floorCollision.height - (worldCollisions.floorCollision.height / 2)
         );
-        const newEnemy = new EnemyEntity("enemy" + Math.random().toString(), ColorAssets.Enemy, new Size3D(5, 5), newEnemyPosition);
+        const newEnemy = new EnemyEntity("enemy" + Math.random().toString(), ColorAssets.Enemy, new Size3D(5, 5), newEnemyPosition, new Rotation(0), 1, new EnemyState(1, 1, 1, 1));
         const newEnemyCollision = newEnemy.getCollision().ignoreZ().isNonPhysical();
         newEnemy.addCollisions(worldCollisions.floorCollision, characterCollision);
         newEnemy.setSpeed(.5);
@@ -156,12 +157,13 @@ export class Setup {
             }
         });
         characterEntity.hook.setOnAction(ActionTypes.key_space, (entity, data) => {
-            console.log("space has been pressed for " + data.count + " times");
-            WorldFunctions.damageInRadiusFromCoordinates3d(entity.position, entity.size.width, 1);
+            if (data.count === 1) {
+                WorldFunctions.damageInRadiusFromCoordinates3d(entity.position, entity.size.width * 4, 1);
+            }
         });
         entityLayer.addEntities(characterEntity);
 
-        //setTimeout(Setup.insertRandomEnemy, 2000);
+        IntervalManager.startInterval(Setup.insertRandomEnemy, 2000);
 
         characterEntity.addCollisions(worldCollisions.floorCollision);
         //characterEntity.addCollisions(...worldEntityCollisions);
