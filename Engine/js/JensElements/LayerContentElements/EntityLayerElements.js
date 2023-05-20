@@ -23,10 +23,26 @@ export class EntityLayerElements {
         }
     }
     static characterEntity = {
-        tag: "div", id: d => d.id, classes: ["character-entity", "entity"]
+        tag: "div", id: d => d.id, classes: ["character-entity", "entity", d => d.texture.image !== null ? "no-bg" : "_"], children: [
+            {
+                condition: d => d.texture.image !== null,
+                tag: "img", classes: ["entity-image"], attributes: {
+                    src: d => d.texture.image,
+                    width: "100%", height: "100%"
+                }
+            }
+        ]
     }
     static enemyEntity = {
-        tag: "div", id: d => d.id, classes: ["enemy-entity", "entity"]
+        tag: "div", id: d => d.id, classes: ["enemy-entity", "entity", d => d.texture.image !== null ? "no-bg" : "_"], children: [
+            {
+                condition: d => d.texture.image !== null,
+                tag: "img", classes: ["entity-image"], attributes: {
+                    src: d => d.texture.image,
+                    width: "100%", height: "100%"
+                }
+            }
+        ]
     }
     static bulletEntity = {
         tag: "div", id: d => d.id, classes: ["bullet-entity", "entity"]

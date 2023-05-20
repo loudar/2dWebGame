@@ -1,4 +1,5 @@
 import {CharacterTexture} from "../../Engine/js/Models/Properties/Textures/CharacterTexture.js";
+import {ImageAssets} from "./ImageAssets.js";
 
 export class ColorAssets {
     static get Enemy() {
@@ -6,6 +7,6 @@ export class ColorAssets {
     }
 
     static get Player() {
-        return new CharacterTexture("#0ff");
+        return new CharacterTexture("#0ff", ImageAssets.Character);
     }
 }

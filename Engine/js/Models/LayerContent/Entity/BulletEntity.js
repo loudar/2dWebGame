@@ -40,8 +40,6 @@ export class BulletEntity extends Entity {
         }
         this.rotation = this.getRotationFromDirection({x: this.position.dX, y: this.position.dY});
         super.update(node);
-        node.style.backgroundColor = this.texture.color;
-        node.style.backgroundImage = this.texture.image ? `url(${this.texture.image})` : "none";
         node.style.borderColor = this.texture.borderColor;
     }
 

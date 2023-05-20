@@ -45,8 +45,6 @@ export class BlockEntity extends Entity {
 
     update(node) {
         super.update(node);
-        node.style.backgroundColor = this.texture.color;
-        node.style.backgroundImage = this.texture.image ? `url(${this.texture.image})` : "none";
         node.style.borderColor = this.texture.borderColor;
     }
 }

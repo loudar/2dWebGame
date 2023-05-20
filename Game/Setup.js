@@ -142,7 +142,7 @@ export class Setup {
     static setupEntities(worldCollisions) {
         //const worldEntityCollisions = this.setupWorldEntities(worldCollisions);
         const entityLayer = new EntityLayer("characters");
-        const characterEntity = new CharacterEntity("test", ColorAssets.Player, new Size3D(10, 10), new Coordinates3D(0, 0), new Rotation(0), 1, new PlayerState(3, 3));
+        const characterEntity = new CharacterEntity("test", ColorAssets.Player, new Size3D(50, 50), new Coordinates3D(0, 0), new Rotation(0), 1, new PlayerState(3, 3));
         characterEntity.setAsPlayer();
         const characterCollision = characterEntity.getCollision().ignoreZ().isNonPhysical();
         characterEntity.hook.setOnCollide(async (c, collidingEntity, collision, collisionSuccess) => {
@@ -155,18 +155,7 @@ export class Setup {
         });
         entityLayer.addEntities(characterEntity);
 
-        /*
-        const enemyEntity = new EnemyEntity("enemy", ColorAssets.Enemy, new Size3D(5, 5), new Coordinates3D(200, 200));
-        const enemyCollision = enemyEntity.getCollision().ignoreZ().isNonPhysical();
-        enemyEntity.setSpeed(.5);
-        enemyEntity.setTarget(characterEntity);
-        enemyEntity.addCollisions(worldCollisions.floorCollision, characterCollision);
-        //enemyEntity.addCollisions(...worldEntityCollisions);
-        entityLayer.addEntities(enemyEntity);
-        characterEntity.addCollisions(enemyCollision);
-        */
-
-        setTimeout(Setup.insertRandomEnemy, 2000);
+        //setTimeout(Setup.insertRandomEnemy, 2000);
 
         characterEntity.addCollisions(worldCollisions.floorCollision);
         //characterEntity.addCollisions(...worldEntityCollisions);
